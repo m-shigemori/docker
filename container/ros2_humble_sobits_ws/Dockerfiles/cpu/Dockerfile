@@ -33,6 +33,19 @@ RUN cd ${HOMEPATH}/sobits_manual_mini && \
     git pull origin main
 
 
+############################
+# Install X11 dependencies  #
+############################
+# Run as root user
+USER root
+
+# Install packages needed for GUI (x11-apps)
+RUN apt-get update && \
+    apt-get install -y \
+    x11-apps \
+    && apt-get clean
+
+
 ##################
 # Other settings #
 ##################
