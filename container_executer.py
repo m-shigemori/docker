@@ -502,7 +502,7 @@ class ContainerExecuter():
         error_message_prefix = ""
 
         if operation == "exec":
-            cmd = f"gnome-terminal -- bash -c 'docker exec -it {container_id} /bin/bash; echo \"\\nセッションを終了しました。\"; read -p \"ターミナルを閉じるにはEnterキーを押してください...\"'"
+            cmd = f"gnome-terminal -- bash -c 'docker exec -it {container_id} /bin/bash; echo -e \"\\nセッションを終了しました\"; read -p \"ターミナルを閉じるにはEnterキーを押してください...\"'"
             success_message = f"コンテナ [{container_name}] でシェルを起動しました。"
             error_message_prefix = f"コンテナ [{container_name}] でシェル起動に失敗しました:"
             # Exec の場合はGUIスレッドでボタンをすぐに有効化する
@@ -525,7 +525,7 @@ class ContainerExecuter():
             error_message_prefix = f"コンテナ [{container_name}] の停止に失敗しました:"
 
         if cmd:
-            print(f"Executing: {cmd}")
+            print(f"Executing: {container_name}")
             try:
                 if operation == "exec":
                     subprocess.Popen(cmd, shell=True)
@@ -540,7 +540,6 @@ class ContainerExecuter():
                     error_output = stderr.decode('utf-8', errors='ignore')
 
                     if process.returncode == 0:
-                        print("Output:", output)
                         self.tk.after(0, lambda: self.update_status_success(success_message))
                     else:
                         print("Error Output:", error_output)
