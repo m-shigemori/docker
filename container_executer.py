@@ -4,9 +4,9 @@
 import os
 import subprocess
 import re
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QVBoxLayout, QHBoxLayout, QMessageBox, QLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QVBoxLayout, QHBoxLayout, QMessageBox, QLayout, QFrame
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QPalette, QBrush
+from PyQt5.QtGui import QPixmap, QPalette, QBrush, QFont
 
 class ContainerExecuter(QWidget):
     def __init__(self):
@@ -19,17 +19,14 @@ class ContainerExecuter(QWidget):
 
     def init_ui(self):
         self.setWindowTitle("ContainerExecuter")
-        # ウィンドウサイズを800x600に固定
         self.setFixedSize(800, 600)
 
-        # 背景画像の設定
         script_dir = os.path.dirname(__file__)
         image_path = os.path.join(script_dir, 'img', 'mika.jpg')
 
         if os.path.exists(image_path):
             pixmap = QPixmap(image_path)
             if not pixmap.isNull():
-                # ウィンドウサイズに合わせて画像をスケーリング
                 scaled_pixmap = pixmap.scaled(self.size(), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
                 palette = self.palette()
                 palette.setBrush(QPalette.Window, QBrush(scaled_pixmap))
@@ -40,8 +37,165 @@ class ContainerExecuter(QWidget):
         else:
             print(f"Warning: Image file not found at {image_path}")
 
+        self.main_layout.setContentsMargins(20, 20, 400, 300)
+        self.main_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+
         self.update_gui_content()
         self.show()
+
+    def create_styled_frame(self):
+        frame = QFrame()
+        frame.setStyleSheet("""
+            QFrame {
+                background-color: rgba(0, 0, 0, 0.8);
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                border-radius: 10px;
+                padding: 10px;
+            }
+        """)
+        return frame
+
+    def create_styled_button(self, text, button_type="normal"):
+        button = QPushButton(text)
+
+        if button_type == "control":
+            button.setStyleSheet("""
+                QPushButton {
+                    background-color: rgba(70, 70, 70, 0.9);
+                    color: white;
+                    border: 1px solid rgba(255, 255, 255, 0.3);
+                    border-radius: 6px;
+                    padding: 4px 12px;
+                    font-size: 12px;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background-color: rgba(90, 90, 90, 0.9);
+                    border: 1px solid rgba(255, 255, 255, 0.5);
+                }
+                QPushButton:pressed {
+                    background-color: rgba(50, 50, 50, 0.9);
+                }
+            """)
+        elif button_type == "start":
+            button.setStyleSheet("""
+                QPushButton {
+                    background-color: rgba(34, 139, 34, 0.9);
+                    color: white;
+                    border: 1px solid rgba(255, 255, 255, 0.3);
+                    border-radius: 4px;
+                    padding: 4px 8px;
+                    font-size: 14px;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background-color: rgba(50, 160, 50, 0.9);
+                }
+                QPushButton:pressed {
+                    background-color: rgba(20, 120, 20, 0.9);
+                }
+            """)
+        elif button_type == "stop":
+            button.setStyleSheet("""
+                QPushButton {
+                    background-color: rgba(220, 20, 60, 0.9);
+                    color: white;
+                    border: 1px solid rgba(255, 255, 255, 0.3);
+                    border-radius: 4px;
+                    padding: 4px 8px;
+                    font-size: 14px;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background-color: rgba(240, 40, 80, 0.9);
+                }
+                QPushButton:pressed {
+                    background-color: rgba(200, 10, 50, 0.9);
+                }
+            """)
+        else:
+            button.setStyleSheet("""
+                QPushButton {
+                    background-color: rgba(70, 130, 180, 0.9);
+                    color: white;
+                    border: 1px solid rgba(255, 255, 255, 0.3);
+                    border-radius: 4px;
+                    padding: 4px 8px;
+                    font-size: 14px;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background-color: rgba(90, 150, 200, 0.9);
+                }
+                QPushButton:pressed {
+                    background-color: rgba(50, 110, 160, 0.9);
+                }
+            """)
+
+        return button
+
+    def create_styled_label(self, text, label_type="normal"):
+        label = QLabel(text)
+        font = QFont()
+        font.setFamily("Arial")
+
+        if label_type == "header":
+            label.setStyleSheet("""
+                QLabel {
+                    color: white;
+                    background-color: rgba(0, 0, 0, 0.7);
+                    border: 1px solid rgba(255, 255, 255, 0.4);
+                    border-radius: 4px;
+                    padding: 6px;
+                    font-size: 13px;
+                    font-weight: bold;
+                }
+            """)
+            font.setBold(True)
+            font.setPointSize(11)
+        elif label_type == "running":
+            label.setStyleSheet("""
+                QLabel {
+                    color: #00FF00;
+                    background-color: rgba(0, 50, 0, 0.8);
+                    border: 1px solid rgba(0, 255, 0, 0.3);
+                    border-radius: 4px;
+                    padding: 4px;
+                    font-size: 12px;
+                    font-weight: bold;
+                }
+            """)
+            font.setBold(True)
+            font.setPointSize(10)
+        elif label_type == "stopped":
+            label.setStyleSheet("""
+                QLabel {
+                    color: #FF6B6B;
+                    background-color: rgba(50, 0, 0, 0.8);
+                    border: 1px solid rgba(255, 0, 0, 0.3);
+                    border-radius: 4px;
+                    padding: 4px;
+                    font-size: 12px;
+                    font-weight: bold;
+                }
+            """)
+            font.setBold(True)
+            font.setPointSize(10)
+        else:
+            label.setStyleSheet("""
+                QLabel {
+                    color: white;
+                    background-color: rgba(40, 40, 40, 0.8);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    border-radius: 4px;
+                    padding: 4px;
+                    font-size: 12px;
+                }
+            """)
+            font.setPointSize(10)
+
+        label.setFont(font)
+        return label
 
     def update_gui_content(self):
         self.clear_layout(self.main_layout)
@@ -49,94 +203,104 @@ class ContainerExecuter(QWidget):
         self.get_containers_info(is_running=False)
         self.get_containers_info(is_running=True)
 
-        # 上部のコントロールボタン (Refresh, Close)
+        main_frame = self.create_styled_frame()
+        main_frame_layout = QVBoxLayout(main_frame)
+        main_frame.setFixedWidth(390)
+
         control_buttons_layout = QHBoxLayout()
-        refresh_button = QPushButton("Refresh")
+        refresh_button = self.create_styled_button("Refresh", "control")
         refresh_button.clicked.connect(self.refresh_gui)
         control_buttons_layout.addWidget(refresh_button)
 
-        close_button = QPushButton("close")
+        close_button = self.create_styled_button("Close", "control")
         close_button.clicked.connect(self.close_gui)
         control_buttons_layout.addWidget(close_button)
-        control_buttons_layout.addStretch(1) # 右に寄せる
-        self.main_layout.addLayout(control_buttons_layout)
 
-        # ヘッダー行の追加
+        control_buttons_layout.addStretch(1)
+        main_frame_layout.addLayout(control_buttons_layout)
+
+        main_frame_layout.addSpacing(10)
+
         header_layout = QHBoxLayout()
-        # "state"
-        state_header = QLabel("state")
-        state_header.setStyleSheet("font-size: 15px; color: black; background-color: rgba(255, 255, 255, 100); padding: 5px;")
-        state_header.setFixedWidth(100) # 幅を固定
-        state_header.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+
+        state_header = self.create_styled_label("State", "header")
+        state_header.setFixedWidth(80)
+        state_header.setAlignment(Qt.AlignCenter)
         header_layout.addWidget(state_header)
 
-        # "name"
-        name_header = QLabel("name")
-        name_header.setStyleSheet("font-size: 15px; color: black; background-color: rgba(255, 255, 255, 100); padding: 5px;")
-        name_header.setFixedWidth(150) # 幅を固定
-        name_header.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        name_header = self.create_styled_label("Name", "header")
+        name_header.setFixedWidth(100)
+        name_header.setAlignment(Qt.AlignCenter)
         header_layout.addWidget(name_header)
 
-        # "control"
-        control_header = QLabel("control")
-        control_header.setStyleSheet("font-size: 15px; color: black; background-color: rgba(255, 255, 255, 100); padding: 5px;")
-        control_header.setFixedWidth(250) # 幅を固定
-        control_header.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        control_header = self.create_styled_label("Control", "header")
+        control_header.setFixedWidth(160)
+        control_header.setAlignment(Qt.AlignCenter)
         header_layout.addWidget(control_header)
-        header_layout.addStretch(1) # 右に寄せる
-        self.main_layout.addLayout(header_layout)
 
+        main_frame_layout.addLayout(header_layout)
 
         for container_info in self.containers_info:
             container_id = container_info[0]
             container_name = container_info[-1].replace(" ", "")
 
             row_layout = QHBoxLayout()
-
             is_running = any(container_id == rc_info[0] for rc_info in self.running_containers_info)
 
-            # State Label
-            state_label = QLabel("Running" if is_running else "Stopped")
-            state_label.setStyleSheet(f"font-size: 15px; color: {'green' if is_running else 'red'}; background-color: rgba(255, 255, 255, 150); padding: 5px;")
-            state_label.setFixedWidth(100) # 幅を固定
-            state_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            state_label = self.create_styled_label(
+                "Running" if is_running else "Stopped",
+                "running" if is_running else "stopped"
+            )
+            state_label.setFixedWidth(80)
+            state_label.setAlignment(Qt.AlignCenter)
             row_layout.addWidget(state_label)
 
-            # Container Name Label
-            container_name_label = QLabel(container_name)
-            container_name_label.setStyleSheet("font-size: 15px; color: black; background-color: rgba(255, 255, 255, 150); padding: 5px;")
-            container_name_label.setFixedWidth(150) # 幅を固定
-            container_name_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            container_name_label = self.create_styled_label(container_name)
+            container_name_label.setFixedWidth(100)
+            container_name_label.setAlignment(Qt.AlignCenter)
             row_layout.addWidget(container_name_label)
 
-            # Control Buttons
+            control_layout = QHBoxLayout()
+            control_layout.setSpacing(4)
+            control_layout.setContentsMargins(0, 0, 0, 0)
+
             if is_running:
-                restart_button = QPushButton("restart")
+                spacer_widget = QWidget()
+                spacer_widget.setFixedWidth(51)
+                control_layout.addWidget(spacer_widget)
+
+                restart_button = self.create_styled_button("↻")
                 restart_button.clicked.connect(self.button_clicked_callback("restart", container_id))
-                row_layout.addWidget(restart_button)
-                restart_button.setFixedWidth(70)
+                restart_button.setFixedSize(32, 24)
+                control_layout.addWidget(restart_button)
 
-                stop_button = QPushButton("stop")
+                stop_button = self.create_styled_button("■", "stop")
                 stop_button.clicked.connect(self.button_clicked_callback("stop", container_id))
-                row_layout.addWidget(stop_button)
-                stop_button.setFixedWidth(70)
+                stop_button.setFixedSize(32, 24)
+                control_layout.addWidget(stop_button)
 
-                exec_button = QPushButton("exec")
+                exec_button = self.create_styled_button("⚡")
                 exec_button.clicked.connect(self.button_clicked_callback("exec", container_id))
-                row_layout.addWidget(exec_button)
-                exec_button.setFixedWidth(70)
+                exec_button.setFixedSize(32, 24)
+                control_layout.addWidget(exec_button)
             else:
-                start_button = QPushButton("start")
+                start_button = self.create_styled_button("▶", "start")
                 start_button.clicked.connect(self.button_clicked_callback("start", container_id))
-                row_layout.addWidget(start_button)
-                start_button.setFixedWidth(70)
-                # startボタンの右にスペースを確保
-                row_layout.addStretch(1) # 残りのスペースを埋める
+                start_button.setFixedSize(50, 24)
+                control_layout.addWidget(start_button)
 
-            row_layout.addStretch(1) # 右に寄せる
-            self.main_layout.addLayout(row_layout)
+            control_layout.addStretch(1)
 
-        self.main_layout.addStretch(1) # 残りのスペースを埋める
+            control_widget = QWidget()
+            control_widget.setLayout(control_layout)
+            control_widget.setFixedWidth(160)
+            row_layout.addWidget(control_widget)
+
+            main_frame_layout.addLayout(row_layout)
+            main_frame_layout.addSpacing(4)
+
+        main_frame_layout.addStretch(1)
+        self.main_layout.addWidget(main_frame)
 
     def add_button(self, layout: QHBoxLayout, operation: str, container_id: str):
         button = QPushButton(operation)
