@@ -41,6 +41,7 @@ class ContainerExecuter(QWidget):
         self.main_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
 
         self.update_gui_content()
+        self.move(0, 0)
         self.show()
 
     def create_styled_frame(self):
