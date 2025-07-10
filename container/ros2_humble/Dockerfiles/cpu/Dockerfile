@@ -35,7 +35,6 @@ ENV LANGUAGE=ja_JP:ja
 ENV LC_ALL=ja_JP.UTF-8
 ENV TZ=Asia/Tokyo
 
-# sobitsユーザーとグループの作成、sudoers設定
 RUN groupadd -g ${GROUP_ID} ${USER_NAME} && \
     useradd -u ${USER_ID} -g ${GROUP_ID} -m -s /bin/bash ${USER_NAME} && \
     echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USER_NAME} && \
@@ -43,15 +42,14 @@ RUN groupadd -g ${GROUP_ID} ${USER_NAME} && \
 
 USER ${USER_NAME}
 
-# ROS2 Humbleをインストール
 COPY install_ros2.sh ${HOMEPATH}/install_ros2.sh
 RUN bash ${HOMEPATH}/install_ros2.sh --humble
 
-# ROS2環境のシェルエイリアスを設定
 COPY configure_shell.sh ${HOMEPATH}/configure_shell.sh
 RUN bash ${HOMEPATH}/configure_shell.sh --ros2
 
-# その他の設定
+RUN rm -f ${HOMEPATH}/install_ros2.sh ${HOMEPATH}/configure_shell.sh
+
 USER root
 
 RUN apt-get clean &&\

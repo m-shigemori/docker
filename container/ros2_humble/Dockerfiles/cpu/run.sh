@@ -5,6 +5,11 @@ str=`echo ${DIR} | awk -F "/" '{ print $(NF - 2) }'`
 
 cd $(pwd)/../../
 
+# srcディレクトリが存在しない場合は作成
+if [ ! -d "src" ]; then
+    mkdir -p src
+fi
+
 xhost +local:${USER}
 
 docker run -it \
@@ -19,6 +24,6 @@ docker run -it \
     --net host \
     --name ${str} \
     --privileged \
-    --user sobits \
+    --user $(id -u):$(id -g) \
     sobits/${str} \
     /bin/bash
