@@ -21,3 +21,5 @@ sudo systemctl enable docker
 sudo systemctl start docker
 
 newgrp docker
+
+pip3 install PyQt5 --break-system-packages
