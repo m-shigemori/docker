@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import os
 import subprocess
 import re
@@ -207,6 +204,7 @@ class ContainerExecuter(QWidget):
         main_frame = self.create_styled_frame()
         main_frame_layout = QVBoxLayout(main_frame)
         main_frame.setFixedWidth(390)
+        main_frame.setMinimumHeight(320)
 
         control_buttons_layout = QHBoxLayout()
         refresh_button = self.create_styled_button("Refresh", "control")
