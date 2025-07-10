@@ -5,7 +5,6 @@ str=`echo ${DIR} | awk -F "/" '{ print $(NF - 2) }'`
 
 cd $(pwd)/../../
 
-# srcディレクトリが存在しない場合は作成
 if [ ! -d "src" ]; then
     mkdir -p src
 fi
