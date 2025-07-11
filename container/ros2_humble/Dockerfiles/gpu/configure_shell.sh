@@ -51,7 +51,7 @@ echo "alias rm='rm -i'" >> "${ALIAS_FILE}"
 echo "" >> "${ALIAS_FILE}"
 
 echo "export PYTHONDONTWRITEBYTECODE=1" >> "${ALIAS_FILE}"
-echo "export PS1='\[\e[1;33;40m\]\$CONTAINER_NAME\[\e[0m\\] \${debian_chroot:+(\$debian_chroot)}\[\033[01;32m\]\u@\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '" >> "${ALIAS_FILE}"
+echo "export PS1='\[\e[1;36;40m\]\$CONTAINER_NAME\[\e[0m\\] \${debian_chroot:+(\$debian_chroot)}\[\033[01;32m\]\u@\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '" >> "${ALIAS_FILE}"
 echo "export EDITOR='nano'" >> "${ALIAS_FILE}"
 
 if [ -f "${ALIAS_FILE}" ]; then
