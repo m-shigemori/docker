@@ -26,6 +26,8 @@ RUN apt-get update && \
     tzdata \
     tree \
     python3-opencv \
+    bash-completion \
+    gedit \
     && \
     rm -rf /var/lib/apt/lists/*
 
