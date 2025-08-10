@@ -23,8 +23,10 @@ RUN apt-get update && \
     python3-pip \
     locales \
     tzdata \
-    tree && \
-    rm -rf /var/lib/apt/lists/*
+    tree \
+    python3-opencv \
+    bash-completion \
+    gedit
 
 RUN echo "ja_JP.UTF-8 UTF-8" >> /etc/locale.gen && \
     locale-gen ja_JP.UTF-8 && \
