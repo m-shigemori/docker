@@ -29,5 +29,6 @@ sudo systemctl start docker
 
 echo "PyQt5をインストール..."
 pip3 install PyQt5 --break-system-packages
+echo "alias ce='python3 docker/scripts/main.py'" >> ~/.bashrc
 
 echo "DockerのインストールとPyQt5の設定が完了
