@@ -27,7 +27,9 @@ RUN apt-get update && \
     tree \
     python3-opencv \
     bash-completion \
-    gedit
+    gedit \
+    && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN echo "ja_JP.UTF-8 UTF-8" >> /etc/locale.gen && \
     locale-gen ja_JP.UTF-8 && \
