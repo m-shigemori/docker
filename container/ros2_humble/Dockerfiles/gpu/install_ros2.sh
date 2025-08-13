@@ -32,7 +32,13 @@ sudo apt install -y ros-${SELECTED_ROS2_DISTRO}-desktop python3-colcon-common-ex
     grep -qxF "export _colcon_cd_root=/opt/ros/${SELECTED_ROS2_DISTRO}/" ~/.bashrc || echo "export _colcon_cd_root=/opt/ros/${SELECTED_ROS2_DISTRO}/"
     grep -qxF "source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash" ~/.bashrc || echo "source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash"
     grep -qxF "source ~/colcon_ws/install/setup.bash" ~/.bashrc || echo "source ~/colcon_ws/install/setup.bash"
+
+    grep -qxF "# My short_cut" ~/.bashrc || { echo ""; echo "# My short_cut"; }
+    grep -qxF "alias roscd=\"cd ~/colcon_ws\"" ~/.bashrc || echo "alias roscd=\"cd ~/colcon_ws\""
+    grep -qxF "alias cb=\"roscd && colcon build\"" ~/.bashrc || echo "alias cb=\"roscd && colcon build\""
+    grep -qxF "alias source_bashrc=\"source ~/.bashrc\"" ~/.bashrc || echo "alias source_bashrc=\"source ~/.bashrc\""
 } >> ~/.bashrc
+
 
 source ~/.bashrc
 
