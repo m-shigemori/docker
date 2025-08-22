@@ -1,33 +1,33 @@
 #!/bin/bash
 
 DIR=$(pwd)
-str=$(echo "${DIR}" | awk -F "/" '{ print $(NF - 2) }')
-
-# 実行するイメージ名を sobits/${str} に固定
-IMAGE_NAME="sobits/${str}"
+STR=$(echo "${DIR}" | awk -F "/" '{ print $(NF - 2) }')
+IMAGE_NAME="sobits/${STR}"
 
 cd "$(pwd)/../../"
 
 if [ ! -d "src" ]; then
     mkdir -p src
 fi
-
 xhost +local:${USER}
 
 docker run -it \
     --gpus all \
     --device /dev/snd \
-    --env CONTAINER_NAME=${str} \
-    --env DISPLAY=${DISPLAY} \
+    --group-add audio \
+    --env CONTAINER_NAME="${STR}" \
+    --env DISPLAY="${DISPLAY}" \
     --env PULSE_SERVER=unix:/run/user/$(id -u)/pulse/native \
     --volume /run/user/$(id -u)/pulse:/run/user/$(id -u)/pulse \
+    --volume /etc/machine-id:/etc/machine-id:ro \
     --volume /etc/udev/rules.d/:/etc/udev/rules.d/ \
     --volume /dev/bus/usb:/dev/bus/usb \
-    --volume "$(pwd)/src/":/home/sobits/colcon_ws/src/ \
-    --shm-size=1g \
+    --volume /dev/snd:/dev/snd \
+    --volume "$(pwd)/src:/home/sobits/colcon_ws/src/" \
     --net host \
-    --name ${str} \
     --privileged \
+    --shm-size=1g \
+    --name "${STR}" \
     --user $(id -u):$(id -g) \
-    ${IMAGE_NAME} \
+    "${IMAGE_NAME}" \
     /bin/bash
