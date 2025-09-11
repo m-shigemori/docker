@@ -16,13 +16,6 @@ echo \
 sudo apt-get update -y
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-sudo usermod -aG docker $USER
-
-sudo systemctl enable docker
-sudo systemctl start docker
-
-newgrp docker
-
 pip3 install PyQt5 --break-system-packages
 
 cat << 'EOF' >> ~/.bashrc
@@ -48,3 +41,10 @@ fi
 
 alias ce='python3 ~/docker/scripts/main.py'
 EOF
+
+sudo usermod -aG docker $USER
+
+sudo systemctl enable docker
+sudo systemctl start docker
+
+newgrp docker
