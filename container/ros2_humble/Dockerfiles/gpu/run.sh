@@ -11,10 +11,17 @@ if [ ! -d "src" ]; then
 fi
 xhost +local:${USER}
 
+VIDEO_DEVICES=""
+for dev in /dev/video*; do
+    [ -e "$dev" ] && VIDEO_DEVICES="$VIDEO_DEVICES --device $dev"
+done
+
 docker run -it \
     --gpus all \
     --device /dev/snd \
+    $VIDEO_DEVICES \
     --group-add audio \
+    --group-add video \
     --env CONTAINER_NAME="${STR}" \
     --env DISPLAY="${DISPLAY}" \
     --env PULSE_SERVER=unix:/run/user/$(id -u)/pulse/native \
