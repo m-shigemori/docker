@@ -19,6 +19,7 @@ done
 docker run -it \
     --gpus all \
     --device /dev/snd \
+    --device /dev/dri \
     $VIDEO_DEVICES \
     --group-add audio \
     --group-add video \
