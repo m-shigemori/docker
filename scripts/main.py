@@ -311,7 +311,7 @@ class ContainerExecuter(QWidget):
             cmd = ""
             if operation == "exec":
                 print(f"[{container_id}] container has been executed.")
-                cmd = f"gnome-terminal -- bash -c 'docker exec -it --user sobits {container_id} /bin/bash; bash'"
+                cmd = f"gnome-terminal -- bash -c 'docker exec -it {container_id} /bin/bash; bash'"
             elif operation == "start":
                 print(f"[{container_id}] container has been started.")
                 cmd = f"docker start {container_id} "
