@@ -21,6 +21,7 @@ RUN apt-get update && \
     git \
     build-essential \
     python3-pip \
+    bash-completion \
     locales \
     tzdata \
     tree
