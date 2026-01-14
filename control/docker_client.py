@@ -35,7 +35,7 @@ class DockerClient:
         self._run_cmd(f"docker start {container_id}")
 
     def stop(self, container_id: str):
-        self._run_cmd(f"docker stop {container_id}")
+        self._run_cmd(f"docker stop --timeout=1 {container_id}")
 
     def exec_shell(self, container_id: str):
         cmd = f"gnome-terminal -- bash -c 'docker exec -it {container_id} /bin/bash; bash'"

@@ -1,0 +1,28 @@
+services:
+  ros2_container:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        LOCAL_UID: ${LOCAL_UID}
+        LOCAL_GID: ${LOCAL_GID}
+        ROS_DOMAIN_ID: 53
+        ROS_DISTRO: ${ROS_DISTRO}
+    image: ${IMAGE_NAME}
+    container_name: ${PARENT_DIR_NAME}
+    network_mode: host
+    privileged: true
+    shm_size: 2g
+    user: "${LOCAL_UID}:${LOCAL_GID}"
+    environment:
+      - DISPLAY=${DISPLAY}
+      - CONTAINER_NAME=${PARENT_DIR_NAME}
+      - PULSE_SERVER=unix:/run/user/1000/pulse/native
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /run/user/1000/pulse:/run/user/1000/pulse
+      - /etc/machine-id:/etc/machine-id:ro
+      - /dev:/dev
+      - ../src:/home/sobits/colcon_ws/src:rw
+    stdin_open: true
+    tty: true
