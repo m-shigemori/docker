@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libasound2-plugins libportaudio2 \
  && rm -rf /var/lib/apt/lists/*
 
-RUN echo -e "[install]\nbreak-system-packages = true" \
+RUN echo "[install]\nbreak-system-packages = true" \
     > /etc/pip.conf
 
 RUN if [ $(getent group ${LOCAL_GID}) ]; \
