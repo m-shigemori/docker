@@ -14,41 +14,61 @@ ENV USER_NAME=sobits \
     PYTHONDONTWRITEBYTECODE=1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    sudo tree bash-completion usbutils nano gh\
+    sudo tree bash-completion usbutils nano gh python3-pip xsel \
+    libasound2-plugins \
  && rm -rf /var/lib/apt/lists/*
 
-RUN if id -u ${LOCAL_UID} >/dev/null 2>&1; then \
-        userdel -r $(id -nu ${LOCAL_UID}) 2>/dev/null || true; \
-    fi \
- && useradd -u ${LOCAL_UID} -m -s /bin/bash ${USER_NAME} \
- && echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USER_NAME} \
- && chmod 0440 /etc/sudoers.d/${USER_NAME} \
- && mkdir -p ${HOME}/colcon_ws/src \
- && chown -R ${LOCAL_UID}:${LOCAL_GID} ${HOME}/colcon_ws
+RUN echo "[install]\nbreak-system-packages = true" \
+    > /etc/pip.conf
 
-RUN cat <<'EOF' >> ${HOME}/.bashrc
-source /etc/bash_completion
+RUN if [ $(getent group ${LOCAL_GID}) ]; then \
+        groupmod -n ${USER_NAME} $(getent group ${LOCAL_GID} | cut -d: -f1); \
+    else \
+        groupadd -g ${LOCAL_GID} ${USER_NAME}; \
+    fi \
+ && if [ $(getent passwd ${LOCAL_UID}) ]; then \
+        userdel -r $(getent passwd ${LOCAL_UID} | cut -d: -f1); \
+    fi \
+ && useradd -u ${LOCAL_UID} -g ${LOCAL_GID} -m -s /bin/bash ${USER_NAME} \
+ && echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USER_NAME} \
+ && chmod 0440 /etc/sudoers.d/${USER_NAME}
+
+RUN mkdir -p ${HOME}/colcon_ws/src ${HOME}/.ros/log \
+ && chown -R ${LOCAL_UID}:${LOCAL_GID} ${HOME}
+
+USER ${USER_NAME}
+
+RUN rosdep update
+
+RUN cat <<EOF >> ${HOME}/.bashrc
+export EDITOR=nano
+export ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
+
 source /opt/ros/${ROS_DISTRO}/setup.bash
 source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
-if [ -f ~/colcon_ws/install/setup.bash ]; then source ~/colcon_ws/install/setup.bash; fi
-export EDITOR=nano
-if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi
+
+if [ -f ~/colcon_ws/install/setup.bash ]; then
+    source ~/colcon_ws/install/setup.bash
+fi
 EOF
 
 RUN cat <<'EOF' > ${HOME}/.bash_aliases
-export PS1="\[\e[1;36m\]$CONTAINER_NAME@\u\[\e[0m\]:\[\e[1;34m\]\w\[\e[0m\]\$ "
+export PS1="\[\e[1;36;48;5;232m\]${CONTAINER_NAME:-docker}\[\e[0m\]\[\e[01;32m\]@\u\[\e[0m\]:\[\e[1;34m\]\w\[\e[0m\]\$ "
+
 alias source_bashrc="source ~/.bashrc"
+alias pip3='python3 -m pip'
+alias copy='xsel -bi'
+
 alias roscd="cd ~/colcon_ws"
 alias cb="cd ~/colcon_ws && colcon build --symlink-install"
 alias cbp="cd ~/colcon_ws && colcon build --symlink-install --packages-select"
+
 alias rt="ros2 topic list"
 alias rn="ros2 node list"
 alias rs="ros2 service list"
 alias ra="ros2 action list"
+alias re="ros2 topic echo"
 EOF
 
-RUN chown ${LOCAL_UID}:${LOCAL_GID} ${HOME}/.bashrc ${HOME}/.bash_aliases
-
-USER ${USER_NAME}
 WORKDIR ${HOME}
 CMD ["/bin/bash"]
