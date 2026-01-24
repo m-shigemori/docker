@@ -15,10 +15,11 @@ ENV USER_NAME=sobits \
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     sudo tree bash-completion usbutils nano gh python3-pip xsel \
-    libasound2-plugins \
- && rm -rf /var/lib/apt/lists/*
+    libasound2-plugins libportaudio2 \
+ && rm -rf /var/lib/apt/lists/* \
+ && ln -sf /usr/bin/gh /usr/bin/git-credential-gh
 
-RUN echo "[install]\nbreak-system-packages = true" \
+RUN echo -e "[install]\nbreak-system-packages = true" \
     > /etc/pip.conf
 
 RUN if [ $(getent group ${LOCAL_GID}) ]; then \
