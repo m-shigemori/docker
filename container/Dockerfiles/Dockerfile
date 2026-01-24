@@ -16,18 +16,19 @@ ENV USER_NAME=sobits \
 RUN apt-get update && apt-get install -y --no-install-recommends \
     sudo tree bash-completion usbutils nano gh python3-pip xsel \
     libasound2-plugins libportaudio2 \
- && rm -rf /var/lib/apt/lists/* \
- && ln -sf /usr/bin/gh /usr/bin/git-credential-gh
+ && rm -rf /var/lib/apt/lists/*
 
 RUN echo -e "[install]\nbreak-system-packages = true" \
     > /etc/pip.conf
 
-RUN if [ $(getent group ${LOCAL_GID}) ]; then \
+RUN if [ $(getent group ${LOCAL_GID}) ]; \
+    then \
         groupmod -n ${USER_NAME} $(getent group ${LOCAL_GID} | cut -d: -f1); \
     else \
         groupadd -g ${LOCAL_GID} ${USER_NAME}; \
     fi \
- && if [ $(getent passwd ${LOCAL_UID}) ]; then \
+ && if [ $(getent passwd ${LOCAL_UID}) ]; \
+    then \
         userdel -r $(getent passwd ${LOCAL_UID} | cut -d: -f1); \
     fi \
  && useradd -u ${LOCAL_UID} -g ${LOCAL_GID} -m -s /bin/bash ${USER_NAME} \
@@ -42,13 +43,15 @@ USER ${USER_NAME}
 RUN rosdep update
 
 RUN cat <<EOF >> ${HOME}/.bashrc
+
 export EDITOR=nano
 export ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
 
 source /opt/ros/${ROS_DISTRO}/setup.bash
 source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
 
-if [ -f ~/colcon_ws/install/setup.bash ]; then
+if [ -f ~/colcon_ws/install/setup.bash ];
+then
     source ~/colcon_ws/install/setup.bash
 fi
 EOF

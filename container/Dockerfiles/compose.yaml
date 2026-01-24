@@ -23,7 +23,9 @@ x-base: &base
     - /etc/machine-id:/etc/machine-id:ro
     - /dev:/dev
     - ../src:/home/sobits/colcon_ws/src:rw
+    - ~/.ssh:/home/sobits/.ssh:ro
     - ~/.config/gh:/home/sobits/.config/gh:rw
+    - ~/.gitconfig:/home/sobits/.gitconfig:rw
   stdin_open: true
   tty: true
 
