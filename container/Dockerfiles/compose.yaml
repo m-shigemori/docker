@@ -17,6 +17,7 @@ x-base: &base
     - DISPLAY=${DISPLAY}
     - CONTAINER_NAME=${PARENT_DIR_NAME}
     - PULSE_SERVER=unix:/run/user/${LOCAL_UID}/pulse/native
+    - PATH=/home/sobits/.local/bin:$PATH
   volumes:
     - /tmp/.X11-unix:/tmp/.X11-unix:rw
     - /run/user/${LOCAL_UID}/pulse:/run/user/${LOCAL_UID}/pulse
