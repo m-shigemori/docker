@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (
     QFrame, QDesktopWidget, QSizePolicy, QLabel, QGraphicsBlurEffect
 )
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QCursor
 
 from scripts.docker_client import DockerClient
 from scripts.ui_style import UIStyle
@@ -28,13 +28,14 @@ class ContainerExecuter(QWidget):
         self.setWindowTitle("ContainerExecuter")
         self.setMinimumSize(*self.config.MIN_WINDOW_SIZE)
         self.resize(*self.config.MIN_WINDOW_SIZE)
-        self._center_window()
+
+        self._set_initial_position()
 
         self.bg_label = QLabel(self)
         self.bg_label.setScaledContents(False)
 
         blur_effect = QGraphicsBlurEffect()
-        blur_effect.setBlurRadius(10)
+        blur_effect.setBlurRadius(20)
         self.bg_label.setGraphicsEffect(blur_effect)
 
         self.main_layout = QHBoxLayout(self)
@@ -44,32 +45,45 @@ class ContainerExecuter(QWidget):
         self.refresh_gui()
         self.show()
 
-    def _center_window(self):
-        qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
+    def _set_initial_position(self):
+        desktop = QDesktopWidget()
+        cursor_pos = QCursor.pos()
+        screen_idx = desktop.screenNumber(cursor_pos)
+        geo = desktop.availableGeometry(screen_idx)
+        self.move(geo.topLeft())
 
     def _update_layout_sizes(self):
         if not os.path.exists(self.config.IMAGE_PATH):
             return
 
         pixmap = QPixmap(self.config.IMAGE_PATH)
+        win_w = self.width()
+        win_h = self.height()
+        img_w = pixmap.width()
+        img_h = pixmap.height()
 
-        self.bg_label.setPixmap(pixmap)
-        self.bg_label.setGeometry(0, 0, self.width(), self.height())
+        scale = max(win_w / img_w, win_h / img_h)
+        new_w = int(img_w * scale)
+        new_h = int(img_h * scale)
+
+        offset_x = int((win_w - new_w) / 2)
+        offset_y = int((win_h - new_h) / 2)
+
+        scaled_bg = pixmap.scaled(new_w, new_h, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+        self.bg_label.setPixmap(scaled_bg)
+        self.bg_label.setGeometry(offset_x, offset_y, new_w, new_h)
         self.bg_label.lower()
 
         h = self.height()
-        scaled = pixmap.scaledToHeight(h, Qt.SmoothTransformation)
-        img_w = scaled.width()
+        scaled_orig = pixmap.scaledToHeight(h, Qt.SmoothTransformation)
+        orig_w = scaled_orig.width()
 
         if self.img_label:
-            self.img_label.setPixmap(scaled)
-            self.img_label.setFixedWidth(img_w)
+            self.img_label.setPixmap(scaled_orig)
+            self.img_label.setFixedWidth(orig_w)
 
         if self.left_panel:
-            panel_w = self.width() - img_w - (self.config.SIDE_MARGIN * 2)
+            panel_w = self.width() - orig_w - (self.config.SIDE_MARGIN * 2)
             self.left_panel.setFixedWidth(panel_w)
             self.left_panel.setFixedHeight(self.height() - 40)
 
