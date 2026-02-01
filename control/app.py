@@ -34,7 +34,7 @@ class ContainerExecuter(QWidget):
         self.bg_label.setScaledContents(False)
 
         blur_effect = QGraphicsBlurEffect()
-        blur_effect.setBlurRadius(0)
+        blur_effect.setBlurRadius(10)
         self.bg_label.setGraphicsEffect(blur_effect)
 
         self.main_layout = QHBoxLayout(self)
