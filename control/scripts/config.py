@@ -1,4 +1,5 @@
 import os
+import random
 
 class StyleConfig:
     BORDER_RADIUS = 8
@@ -6,14 +7,14 @@ class StyleConfig:
     CONTROL_BUTTON_WIDTH = 90
     ACTION_BUTTON_WIDTH = 36
 
-    WINDOW_SIZE = (960, 540)
-    FRAME_WIDTH = 440
+    MIN_WINDOW_SIZE = (800, 540)
+    SIDE_MARGIN = 15
     FRAME_MAX_HEIGHT_RATIO = 0.9
 
     COLUMN_STRETCH = {
         "state": 3,
         "name": 5,
-        "control": 5,
+        "control": 5
     }
 
     COLORS = {
@@ -32,6 +33,18 @@ class StyleConfig:
         "header_bg": "rgba(255,255,255,0.1)",
     }
 
-    IMAGE_PATH = os.path.abspath(os.path.join(
-        os.path.dirname(__file__), "..", "img", "kotone.jpg"
-    ))
+    def __init__(self):
+        img_dir = os.path.abspath(os.path.join(
+            os.path.dirname(__file__), "..", "img"
+        ))
+
+        if os.path.exists(img_dir):
+            images = [
+                os.path.join(img_dir, f)
+                for f in os.listdir(img_dir)
+                if f.lower().endswith(".jpg")
+            ]
+        else:
+            images = []
+
+        self.IMAGE_PATH = random.choice(images) if images else ""

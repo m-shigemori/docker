@@ -1,7 +1,10 @@
 import os
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QFrame, QDesktopWidget, QSizePolicy
+from PyQt5.QtWidgets import (
+    QApplication, QWidget, QVBoxLayout, QHBoxLayout,
+    QFrame, QDesktopWidget, QSizePolicy, QLabel, QGraphicsBlurEffect
+)
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QPalette, QBrush
+from PyQt5.QtGui import QPixmap
 
 from scripts.docker_client import DockerClient
 from scripts.ui_style import UIStyle
@@ -14,17 +17,29 @@ class ContainerExecuter(QWidget):
         self.client = DockerClient()
         self.config = StyleConfig()
         self.ui = UIStyle(self.config)
+
+        self.bg_label = None
+        self.img_label = None
+        self.left_panel = None
+
         self.init_ui()
 
     def init_ui(self):
         self.setWindowTitle("ContainerExecuter")
-        self.setFixedSize(*self.config.WINDOW_SIZE)
+        self.setMinimumSize(*self.config.MIN_WINDOW_SIZE)
+        self.resize(*self.config.MIN_WINDOW_SIZE)
         self._center_window()
-        self._setup_background()
 
-        self.main_layout = QVBoxLayout(self)
-        self.main_layout.setContentsMargins(20, 20, 20, 20)
-        self.main_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.bg_label = QLabel(self)
+        self.bg_label.setScaledContents(False)
+
+        blur_effect = QGraphicsBlurEffect()
+        blur_effect.setBlurRadius(0)
+        self.bg_label.setGraphicsEffect(blur_effect)
+
+        self.main_layout = QHBoxLayout(self)
+        self.main_layout.setContentsMargins(self.config.SIDE_MARGIN, 0, 0, 0)
+        self.main_layout.setSpacing(self.config.SIDE_MARGIN)
 
         self.refresh_gui()
         self.show()
@@ -35,30 +50,44 @@ class ContainerExecuter(QWidget):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
-    def _setup_background(self):
+    def _update_layout_sizes(self):
         if not os.path.exists(self.config.IMAGE_PATH):
             return
+
         pixmap = QPixmap(self.config.IMAGE_PATH)
-        w, h = self.config.WINDOW_SIZE
-        scaled = pixmap.scaled(w, h, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
-        final = scaled.copy((scaled.width() - w) // 2, (scaled.height() - h) // 2, w, h)
-        palette = self.palette()
-        palette.setBrush(QPalette.Window, QBrush(final))
-        self.setPalette(palette)
-        self.setAutoFillBackground(True)
+
+        self.bg_label.setPixmap(pixmap)
+        self.bg_label.setGeometry(0, 0, self.width(), self.height())
+        self.bg_label.lower()
+
+        h = self.height()
+        scaled = pixmap.scaledToHeight(h, Qt.SmoothTransformation)
+        img_w = scaled.width()
+
+        if self.img_label:
+            self.img_label.setPixmap(scaled)
+            self.img_label.setFixedWidth(img_w)
+
+        if self.left_panel:
+            panel_w = self.width() - img_w - (self.config.SIDE_MARGIN * 2)
+            self.left_panel.setFixedWidth(panel_w)
+            self.left_panel.setFixedHeight(self.height() - 40)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self._update_layout_sizes()
 
     def refresh_gui(self):
         self._clear_layout(self.main_layout)
         containers = self.client.list_containers()
 
-        frame = self.ui.frame()
-        frame.setFixedWidth(self.config.FRAME_WIDTH)
-        frame.setMaximumHeight(int(self.height() * self.config.FRAME_MAX_HEIGHT_RATIO))
-
-        layout = QVBoxLayout(frame)
-        layout.setContentsMargins(15, 15, 15, 15)
+        self.left_panel = self.ui.frame()
+        panel_layout = QVBoxLayout(self.left_panel)
+        panel_layout.setContentsMargins(15, 15, 15, 15)
+        panel_layout.setSpacing(0)
 
         ctrl_layout = QHBoxLayout()
+        ctrl_layout.setSpacing(10)
         refresh_btn = self.ui.button("Refresh", "control")
         refresh_btn.clicked.connect(self.refresh_gui)
         close_btn = self.ui.button("Close", "control")
@@ -66,39 +95,52 @@ class ContainerExecuter(QWidget):
         ctrl_layout.addWidget(refresh_btn)
         ctrl_layout.addWidget(close_btn)
         ctrl_layout.addStretch()
-        layout.addLayout(ctrl_layout)
-        layout.addSpacing(15)
+        panel_layout.addLayout(ctrl_layout)
+
+        panel_layout.addSpacing(15)
 
         header_layout = QHBoxLayout()
+        header_layout.setSpacing(10)
         for text, key in [("State", "state"), ("Name", "name"), ("Control", "control")]:
             label = self.ui.label(text, "header")
             label.setFixedHeight(self.config.BUTTON_HEIGHT)
-            label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
             label.setAlignment(Qt.AlignCenter)
             header_layout.addWidget(label)
             header_layout.setStretchFactor(label, self.config.COLUMN_STRETCH[key])
-        layout.addLayout(header_layout)
-        layout.addSpacing(8)
+        panel_layout.addLayout(header_layout)
+
+        panel_layout.addSpacing(8)
 
         line = QFrame()
         line.setFrameShape(QFrame.HLine)
-        line.setStyleSheet("background-color: rgba(255,255,255,0.5); border: none; height: 1px;")
-        layout.addWidget(line)
-        layout.addSpacing(8)
+        line.setStyleSheet("background-color: rgba(255,255,255,0.3); border: none; height: 1px;")
+        panel_layout.addWidget(line)
+
+        panel_layout.addSpacing(8)
 
         scroll = self.ui.scroll()
-        content = QWidget()
-        content.setStyleSheet("background: transparent;")
-        content_layout = QVBoxLayout(content)
+        scroll_content = QWidget()
+        scroll_content.setStyleSheet("background: transparent;")
+        content_layout = QVBoxLayout(scroll_content)
         content_layout.setContentsMargins(0, 0, 0, 0)
         content_layout.setSpacing(12)
+
         for c in containers:
             content_layout.addWidget(ContainerRow(c, self.ui, self.config, self._handle_action))
-        content_layout.addStretch()
-        scroll.setWidget(content)
-        layout.addWidget(scroll)
 
-        self.main_layout.addWidget(frame)
+        content_layout.addStretch()
+        scroll.setWidget(scroll_content)
+        panel_layout.addWidget(scroll)
+
+        self.img_label = QLabel()
+        self.img_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.img_label.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.img_label.setStyleSheet("background: transparent;")
+
+        self.main_layout.addWidget(self.left_panel, alignment=Qt.AlignVCenter)
+        self.main_layout.addWidget(self.img_label)
+
+        self._update_layout_sizes()
 
     def _handle_action(self, action, container_id):
         actions = {"start": self.client.start, "stop": self.client.stop, "exec": self.client.exec_shell}
@@ -109,8 +151,10 @@ class ContainerExecuter(QWidget):
     def _clear_layout(self, layout):
         while layout.count():
             item = layout.takeAt(0)
-            if item.widget(): item.widget().deleteLater()
-            elif item.layout(): self._clear_layout(item.layout())
+            if item.widget():
+                item.widget().deleteLater()
+            elif item.layout():
+                self._clear_layout(item.layout())
 
 if __name__ == "__main__":
     app = QApplication([])
