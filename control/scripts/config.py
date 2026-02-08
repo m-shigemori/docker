@@ -34,17 +34,22 @@ class StyleConfig:
     }
 
     def __init__(self):
-        img_dir = os.path.abspath(os.path.join(
+        self.img_dir = os.path.abspath(os.path.join(
             os.path.dirname(__file__), "..", "img"
         ))
+        self.IMAGE_PATH = ""
+        self.refresh_image_path()
 
-        if os.path.exists(img_dir):
+    def refresh_image_path(self):
+        if os.path.exists(self.img_dir):
             images = [
-                os.path.join(img_dir, f)
-                for f in os.listdir(img_dir)
-                if f.lower().endswith(".jpg")
+                os.path.join(self.img_dir, f)
+                for f in os.listdir(self.img_dir)
+                if f.lower().endswith((".jpg", ".png", ".jpeg"))
             ]
-        else:
-            images = []
 
-        self.IMAGE_PATH = random.choice(images) if images else ""
+            if len(images) > 1:
+                choices = [img for img in images if img != self.IMAGE_PATH]
+                self.IMAGE_PATH = random.choice(choices)
+            elif images:
+                self.IMAGE_PATH = images[0]

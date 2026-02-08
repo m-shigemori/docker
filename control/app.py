@@ -1,13 +1,14 @@
 import os
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
-    QFrame, QDesktopWidget, QSizePolicy, QLabel, QGraphicsBlurEffect
+    QFrame, QDesktopWidget, QSizePolicy, QLabel
 )
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QCursor
+from PyQt5.QtGui import QCursor
 
 from scripts.docker_client import DockerClient
 from scripts.ui_style import UIStyle
+from scripts.ui_manager import UIManager
 from scripts.config import StyleConfig
 from scripts.widgets import ContainerRow
 
@@ -17,8 +18,8 @@ class ContainerExecuter(QWidget):
         self.client = DockerClient()
         self.config = StyleConfig()
         self.ui = UIStyle(self.config)
+        self.ui_manager = UIManager(self, self.config)
 
-        self.bg_label = None
         self.img_label = None
         self.left_panel = None
 
@@ -30,13 +31,6 @@ class ContainerExecuter(QWidget):
         self.resize(*self.config.MIN_WINDOW_SIZE)
 
         self._set_initial_position()
-
-        self.bg_label = QLabel(self)
-        self.bg_label.setScaledContents(False)
-
-        blur_effect = QGraphicsBlurEffect()
-        blur_effect.setBlurRadius(20)
-        self.bg_label.setGraphicsEffect(blur_effect)
 
         self.main_layout = QHBoxLayout(self)
         self.main_layout.setContentsMargins(self.config.SIDE_MARGIN, 0, 0, 0)
@@ -52,47 +46,18 @@ class ContainerExecuter(QWidget):
         geo = desktop.availableGeometry(screen_idx)
         self.move(geo.topLeft())
 
-    def _update_layout_sizes(self):
-        if not os.path.exists(self.config.IMAGE_PATH):
-            return
-
-        pixmap = QPixmap(self.config.IMAGE_PATH)
-        win_w = self.width()
-        win_h = self.height()
-        img_w = pixmap.width()
-        img_h = pixmap.height()
-
-        scale = max(win_w / img_w, win_h / img_h)
-        new_w = int(img_w * scale)
-        new_h = int(img_h * scale)
-
-        offset_x = int((win_w - new_w) / 2)
-        offset_y = int((win_h - new_h) / 2)
-
-        scaled_bg = pixmap.scaled(new_w, new_h, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
-        self.bg_label.setPixmap(scaled_bg)
-        self.bg_label.setGeometry(offset_x, offset_y, new_w, new_h)
-        self.bg_label.lower()
-
-        h = self.height()
-        scaled_orig = pixmap.scaledToHeight(h, Qt.SmoothTransformation)
-        orig_w = scaled_orig.width()
-
-        if self.img_label:
-            self.img_label.setPixmap(scaled_orig)
-            self.img_label.setFixedWidth(orig_w)
-
-        if self.left_panel:
-            panel_w = self.width() - orig_w - (self.config.SIDE_MARGIN * 2)
-            self.left_panel.setFixedWidth(panel_w)
-            self.left_panel.setFixedHeight(self.height() - 40)
-
     def resizeEvent(self, event):
         super().resizeEvent(event)
-        self._update_layout_sizes()
+        if self.img_label:
+            self.ui_manager.update_background(self.img_label, self.left_panel)
+
+    def trigger_refresh(self):
+        self.config.refresh_image_path()
+        self.ui_manager.fade_refresh(self.refresh_gui)
 
     def refresh_gui(self):
         self._clear_layout(self.main_layout)
+
         containers = self.client.list_containers()
 
         self.left_panel = self.ui.frame()
@@ -103,7 +68,7 @@ class ContainerExecuter(QWidget):
         ctrl_layout = QHBoxLayout()
         ctrl_layout.setSpacing(10)
         refresh_btn = self.ui.button("Refresh", "control")
-        refresh_btn.clicked.connect(self.refresh_gui)
+        refresh_btn.clicked.connect(self.trigger_refresh)
         close_btn = self.ui.button("Close", "control")
         close_btn.clicked.connect(self.close)
         ctrl_layout.addWidget(refresh_btn)
@@ -154,13 +119,16 @@ class ContainerExecuter(QWidget):
         self.main_layout.addWidget(self.left_panel, alignment=Qt.AlignVCenter)
         self.main_layout.addWidget(self.img_label)
 
-        self._update_layout_sizes()
+        self.ui_manager.update_background(self.img_label, self.left_panel)
 
     def _handle_action(self, action, container_id):
         actions = {"start": self.client.start, "stop": self.client.stop, "exec": self.client.exec_shell}
         if action in actions:
             actions[action](container_id)
-            self.refresh_gui()
+            if action == "start":
+                self.trigger_refresh()
+            else:
+                self.refresh_gui()
 
     def _clear_layout(self, layout):
         while layout.count():

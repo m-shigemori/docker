@@ -13,6 +13,8 @@ x-base: &base
   privileged: true
   shm_size: 2g
   user: "${LOCAL_UID}:${LOCAL_GID}"
+  group_add:
+    - dialout
   environment:
     - DISPLAY=${DISPLAY}
     - CONTAINER_NAME=${PARENT_DIR_NAME}
@@ -23,6 +25,7 @@ x-base: &base
     - /run/user/${LOCAL_UID}/pulse:/run/user/${LOCAL_UID}/pulse
     - /etc/machine-id:/etc/machine-id:ro
     - /dev:/dev
+    - /run/udev:/run/udev:ro
     - ../src:/home/sobits/colcon_ws/src:rw
     - ~/.ssh:/home/sobits/.ssh:ro
     - ~/.config/gh:/home/sobits/.config/gh:rw
