@@ -1,11 +1,10 @@
 x-base: &base
   build:
     context: .
-    dockerfile: Dockerfile
     args:
       LOCAL_UID: ${LOCAL_UID}
       LOCAL_GID: ${LOCAL_GID}
-      ROS_DOMAIN_ID: 53
+      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID}
       ROS_DISTRO: ${ROS_DISTRO}
   image: ${IMAGE_NAME}
   container_name: ${PARENT_DIR_NAME}
@@ -15,36 +14,29 @@ x-base: &base
   user: "${LOCAL_UID}:${LOCAL_GID}"
   group_add:
     - dialout
+    - audio
+    - video
   environment:
-    - DISPLAY=${DISPLAY}
-    - CONTAINER_NAME=${PARENT_DIR_NAME}
-    - PULSE_SERVER=unix:/run/user/${LOCAL_UID}/pulse/native
-    - PATH=/home/sobits/.local/bin:$PATH
+    DISPLAY: ${DISPLAY}
+    PULSE_SERVER: unix:/run/user/${LOCAL_UID}/pulse/native
+    CONTAINER_NAME: ${PARENT_DIR_NAME}
   volumes:
-    - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    - /tmp/.X11-unix:/tmp/.X11-unix
     - /run/user/${LOCAL_UID}/pulse:/run/user/${LOCAL_UID}/pulse
-    - /etc/machine-id:/etc/machine-id:ro
-    - /dev:/dev
     - /run/udev:/run/udev:ro
-    - ../src:/home/sobits/colcon_ws/src:rw
+    - /dev:/dev
+    - ../src:/home/sobits/colcon_ws/src
     - ~/.ssh:/home/sobits/.ssh:ro
-    - ~/.config/gh:/home/sobits/.config/gh:rw
-    - ~/.gitconfig:/home/sobits/.gitconfig:rw
+    - ~/.gitconfig:/home/sobits/.gitconfig
   stdin_open: true
   tty: true
 
 services:
-  ros2_cpu:
+  ros2:
     <<: *base
     profiles: ["cpu"]
 
   ros2_gpu:
     <<: *base
+    gpus: all
     profiles: ["gpu"]
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
