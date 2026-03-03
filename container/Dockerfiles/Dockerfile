@@ -1,4 +1,3 @@
-# Dockerfile
 ARG ROS_DISTRO=humble
 FROM osrf/ros:${ROS_DISTRO}-desktop-full
 
@@ -22,7 +21,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN echo "[install]\nbreak-system-packages = true" > /etc/pip.conf
 
-RUN groupadd -g ${LOCAL_GID} ${USER_NAME} \
+RUN if [ $(getent passwd ${LOCAL_UID}) ]; then userdel -r $(getent passwd ${LOCAL_UID} | cut -d: -f1); fi \
+ && if [ $(getent group ${LOCAL_GID}) ]; then groupdel $(getent group ${LOCAL_GID} | cut -d: -f1); fi \
+ && groupadd -g ${LOCAL_GID} ${USER_NAME} \
  && useradd -u ${LOCAL_UID} -g ${LOCAL_GID} -m -s /bin/bash ${USER_NAME} \
  && echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USER_NAME} \
  && chmod 0440 /etc/sudoers.d/${USER_NAME}
@@ -39,7 +40,7 @@ source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
 EOF
 
 RUN cat <<'EOF' >> ${HOME}/.bash_aliases
-export PS1="\[\e[1;36;48;5;232m\]${CONTAINER_NAME:-docker}\[\e[0m\]\[\e[01;32m\]@\u\[\e[0m\]:\[\e[1;34m\]\w\[\e[0m\]\$ "
+export PS1="\[\e[1;36;48;5;232m\]\${CONTAINER_NAME:-docker}\[\e[0m\]\[\e[01;32m\]@\u\[\e[0m\]:\[\e[1;34m\]\w\[\e[0m\]\$ "
 alias copy="xsel -bi"
 
 alias roscd="cd ~/colcon_ws"

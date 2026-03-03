@@ -3,6 +3,10 @@ xhost +local:$USER >/dev/null
 DIR=$(cd $(dirname "$0"); pwd)
 NAME=$(basename "$(dirname "$DIR")")
 
+if [ -f "${DIR}/.env" ]; then
+    export $(grep -v '^#' "${DIR}/.env" | xargs)
+fi
+
 export LOCAL_UID=$(id -u)
 export LOCAL_GID=$(id -g)
 export ROS_DISTRO=${ROS_DISTRO:-humble}
@@ -15,5 +19,4 @@ export GITHUB_TOKEN=$(gh auth token)
 
 mkdir -p "${DIR}/../src"
 
-docker compose -p "${NAME}" -f "${DIR}/compose.yaml" \
-  --profile "${PROFILE}" up -d --build --remove-orphans
+docker compose -p "${NAME}" -f "${DIR}/compose.yaml" --profile "${PROFILE}" up -d --build --remove-orphans
