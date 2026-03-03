@@ -39,6 +39,7 @@ EOF
 RUN cat <<'EOF' >> ${HOME}/.bash_aliases
 export PS1="\[\e[1;36;48;5;232m\]${CONTAINER_NAME:-docker}\[\e[0m\]\[\e[01;32m\]@\u\[\e[0m\]:\[\e[1;34m\]\w\[\e[0m\]\$ "
 alias copy="xsel -bi"
+
 alias roscd="cd ~/colcon_ws"
 alias cb="roscd && colcon build --symlink-install"
 alias cbp="roscd && colcon build --symlink-install --packages-select"
@@ -47,6 +48,9 @@ alias rn="ros2 node list"
 alias rs="ros2 service list"
 alias ra="ros2 action list"
 alias re="ros2 topic echo"
+
+alias ghl='gh repo list'
+alias ghurl='gh repo view --json url -q .url'
 EOF
 
 USER ${USER_NAME}
