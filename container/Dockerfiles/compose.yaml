@@ -6,28 +6,35 @@ x-base: &base
       LOCAL_GID: ${LOCAL_GID}
       ROS_DOMAIN_ID: ${ROS_DOMAIN_ID}
       ROS_DISTRO: ${ROS_DISTRO}
+
   image: ${IMAGE_NAME}
   container_name: ${PARENT_DIR_NAME}
+
   network_mode: host
   privileged: true
   shm_size: 2g
+
   user: "${LOCAL_UID}:${LOCAL_GID}"
   group_add:
     - dialout
     - audio
     - video
+
   environment:
     DISPLAY: ${DISPLAY}
     PULSE_SERVER: unix:/run/user/${LOCAL_UID}/pulse/native
     CONTAINER_NAME: ${PARENT_DIR_NAME}
+    GH_TOKEN: ${GITHUB_TOKEN}
+
   volumes:
     - /tmp/.X11-unix:/tmp/.X11-unix
     - /run/user/${LOCAL_UID}/pulse:/run/user/${LOCAL_UID}/pulse
     - /run/udev:/run/udev:ro
     - /dev:/dev
     - ../src:/home/sobits/colcon_ws/src
-    - ~/.ssh:/home/sobits/.ssh:ro
-    - ~/.gitconfig:/home/sobits/.gitconfig
+    - ${HOME}/.ssh:/home/sobits/.ssh:ro
+    - ${HOME}/.gitconfig:/home/sobits/.gitconfig
+
   stdin_open: true
   tty: true
 

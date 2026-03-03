@@ -28,7 +28,7 @@ RUN groupadd -g ${LOCAL_GID} ${USER_NAME} \
 RUN mkdir -p ${HOME}/colcon_ws/src ${HOME}/.ros/log \
  && chown -R ${LOCAL_UID}:${LOCAL_GID} ${HOME}
 
-RUN cat <<'EOF' >> ${HOME}/.bashrc
+RUN cat <<EOF >> ${HOME}/.bashrc
 export EDITOR=nano
 export ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
 source /opt/ros/${ROS_DISTRO}/setup.bash

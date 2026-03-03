@@ -10,6 +10,7 @@ export LOCAL_GID=$(id -g)
 export ROS_DISTRO=${ROS_DISTRO:-humble}
 export IMAGE_NAME="sobits/${NAME}"
 export PARENT_DIR_NAME="${NAME}"
+export GITHUB_TOKEN=$(gh auth token)
 
 [ "$USE_GPU" = "true" ] && PROFILE="gpu" || PROFILE="cpu"
 
