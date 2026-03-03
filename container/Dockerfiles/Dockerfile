@@ -1,12 +1,14 @@
+# Dockerfile
 ARG ROS_DISTRO=humble
 FROM osrf/ros:${ROS_DISTRO}-desktop-full
 
 ARG LOCAL_UID=1000
 ARG LOCAL_GID=1000
 ARG ROS_DOMAIN_ID=53
+ARG USER_NAME=sobits
 
-ENV USER_NAME=sobits \
-    HOME=/home/sobits \
+ENV USER_NAME=${USER_NAME} \
+    HOME=/home/${USER_NAME} \
     DEBIAN_FRONTEND=noninteractive \
     LC_ALL=C.UTF-8 \
     TZ=Asia/Tokyo \

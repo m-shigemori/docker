@@ -6,6 +6,7 @@ x-base: &base
       LOCAL_GID: ${LOCAL_GID}
       ROS_DOMAIN_ID: ${ROS_DOMAIN_ID}
       ROS_DISTRO: ${ROS_DISTRO}
+      USER_NAME: ${USER_NAME}
 
   image: ${IMAGE_NAME}
   container_name: ${PARENT_DIR_NAME}
@@ -25,15 +26,16 @@ x-base: &base
     PULSE_SERVER: unix:/run/user/${LOCAL_UID}/pulse/native
     CONTAINER_NAME: ${PARENT_DIR_NAME}
     GH_TOKEN: ${GITHUB_TOKEN}
+    USER_NAME: ${USER_NAME}
 
   volumes:
     - /tmp/.X11-unix:/tmp/.X11-unix
     - /run/user/${LOCAL_UID}/pulse:/run/user/${LOCAL_UID}/pulse
     - /run/udev:/run/udev:ro
     - /dev:/dev
-    - ../src:/home/sobits/colcon_ws/src
-    - ${HOME}/.ssh:/home/sobits/.ssh:ro
-    - ${HOME}/.gitconfig:/home/sobits/.gitconfig
+    - ../src:/home/${USER_NAME}/colcon_ws/src
+    - ${HOME}/.ssh:/home/${USER_NAME}/.ssh:ro
+    - ${HOME}/.gitconfig:/home/${USER_NAME}/.gitconfig
 
   stdin_open: true
   tty: true
