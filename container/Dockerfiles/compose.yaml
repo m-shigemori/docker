@@ -2,11 +2,12 @@ x-base: &base
   build:
     context: .
     args:
-      LOCAL_UID: ${LOCAL_UID}
-      LOCAL_GID: ${LOCAL_GID}
       ROS_DISTRO: ${ROS_DISTRO}
+      CUDA_VER: ${CUDA_VER}
       ROS_DOMAIN_ID: ${ROS_DOMAIN_ID}
       USER_NAME: ${USER_NAME}
+      LOCAL_UID: ${LOCAL_UID}
+      LOCAL_GID: ${LOCAL_GID}
 
   image: ${IMAGE_NAME}
   container_name: ${PARENT_DIR_NAME}
