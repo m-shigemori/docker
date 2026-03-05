@@ -72,7 +72,9 @@ alias rn="ros2 node list"
 alias rs="ros2 service list"
 alias ra="ros2 action list"
 alias re="ros2 topic echo"
+
 alias ghl='gh repo list'
+alias ghc='gh repo clone'
 alias ghurl='gh repo view --json url -q .url'
 EOF
 
