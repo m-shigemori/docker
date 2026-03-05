@@ -40,7 +40,7 @@ RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-${ROS_DISTRO}-desktop ros-dev-tools python3-rosdep \
  && rm -rf /var/lib/apt/lists/* \
- && echo -e "[install]\nbreak-system-packages = true" > /etc/pip.conf
+ && echo "[install]\nbreak-system-packages = true" > /etc/pip.conf
 
 RUN if getent passwd ${LOCAL_UID}; then userdel -r $(getent passwd ${LOCAL_UID} | cut -d: -f1); fi \
  && if getent group ${LOCAL_GID}; then groupdel $(getent group ${LOCAL_GID} | cut -d: -f1); fi \
