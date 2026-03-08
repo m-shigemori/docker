@@ -1,4 +1,7 @@
 x-base: &base
+  image: ${IMAGE_NAME}
+  container_name: ${PARENT_DIR_NAME}
+
   build:
     context: .
     args:
@@ -9,18 +12,11 @@ x-base: &base
       LOCAL_UID: ${LOCAL_UID}
       LOCAL_GID: ${LOCAL_GID}
 
-  image: ${IMAGE_NAME}
-  container_name: ${PARENT_DIR_NAME}
-
   network_mode: host
   privileged: true
   shm_size: 2g
 
   user: "${LOCAL_UID}:${LOCAL_GID}"
-  group_add:
-    - dialout
-    - audio
-    - video
 
   environment:
     USER_NAME: ${USER_NAME}
@@ -28,12 +24,12 @@ x-base: &base
     GH_TOKEN: ${GITHUB_TOKEN}
     DISPLAY: ${DISPLAY}
     PULSE_SERVER: unix:/run/user/${LOCAL_UID}/pulse/native
+    ROS_DOMAIN_ID: ${ROS_DOMAIN_ID}
 
   volumes:
+    - /dev:/dev
     - /tmp/.X11-unix:/tmp/.X11-unix
     - /run/user/${LOCAL_UID}/pulse:/run/user/${LOCAL_UID}/pulse
-    - /run/udev:/run/udev:ro
-    - /dev:/dev
     - ../src:/home/${USER_NAME}/colcon_ws/src
     - ${HOME}/.ssh:/home/${USER_NAME}/.ssh:ro
     - ${HOME}/.gitconfig:/home/${USER_NAME}/.gitconfig

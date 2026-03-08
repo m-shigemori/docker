@@ -11,6 +11,7 @@ export USER_NAME=${USER_NAME:-sobits}
 export LOCAL_UID=$(id -u)
 export LOCAL_GID=$(id -g)
 export GITHUB_TOKEN=$(gh auth token)
+export DISPLAY=${DISPLAY}
 
 export ROS_DISTRO=${ROS_DISTRO:-humble}
 export IMAGE_NAME="sobits/${NAME}"
