@@ -1,60 +1,55 @@
 # ContainerExecuter
 
-Dockerコンテナの管理を直感的に行うためのGUIツールです．
-PyQt5を使用しており，コンテナの起動・停止・シェルへのアタッチに加え，コンテナとベースイメージの一括削除を簡単に行うことができます．
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![License][license-shield]][license-url]
 
-[English Version (README_en.md)](README_en.md)
+[JA](README.md) | [EN](README.en.md)
+
+Dockerコンテナの管理を直感的に行うためのGUIツールです．
+PyQt5を採用しており，コンテナの起動・停止・アタッチに加え，コンテナとベースイメージの一括削除を簡単に行うことができます．
 
 ## 主な機能
 
-- **コンテナ管理**: 起動中のコンテナ一覧を表示し，開始・停止が可能です．
-- **シェル接続**: ワンクリックでコンテナのシェルを新しいターミナルで開きます．
-- **一括削除機能**: 「Editモード」に切り替えることで，不要なコンテナとそのベースイメージをワンクリックで同時に削除できます．
-- **ビジュアル**: 背景画像のランダム表示機能を備えたモダンなGUI．
-- **コマンドライン連携**: `ce`（GUI起動）および `dock`（fzfによるクイックアタッチ）コマンドを提供します．
+- **コンテナ管理**：起動中のコンテナ一覧を表示し，開始・停止操作が可能です．
+- **シェル接続**：ワンクリックでコンテナのシェルを新しいターミナルで開きます．
+- **一括削除**：「Editモード」では，不要なコンテナとそのベースイメージを同時に削除できます．
+- **ビジュアル**：背景画像がランダムに表示されるモダンなGUIデザイン．
+- **CLI連携**：`ce`（GUI起動）および `dock`（fzfによるクイックアタッチ）コマンドを提供します．
 
 ## UI モード
 
-### Standard モード (通常モード)
-起動，停止，シェルへのアクセスなどの日常的な操作に使用します．
+### Standard モード
+起動，停止，シェル接続などの日常的な操作に使用します．
 ![Standard Mode](docs/standard_mode.png)
 
-### Edit モード (編集モード)
-不要になったコンテナやイメージを一括で削除し，環境を整理する際に使用します．
+### Edit モード
+不要になったコンテナやイメージを整理する際に使用します．
 ![Edit Mode](docs/edit_mode.png)
 
-## インストール方法
+## インストール
 
-リポジトリのルートディレクトリで以下のコマンドを実行してください．
+リポジトリのルートで以下のコマンドを実行してください．
 
 ```bash
 bash install.sh
 ```
 
-このスクリプトは以下の処理を自動的に行います．
+このスクリプトは，DockerやNVIDIA Container Toolkitのセットアップ，必要なライブラリのインストール，エイリアスの追加などを自動的に行います．
 
-1. 共通の前提パッケージ（curl等）のインストール．
-2. Dockerのインストール（未インストールの場合）．
-3. NVIDIA Container Toolkitのインストール（GPU対応が必要な場合のみ）．
-4. 必要なパッケージ（PyQt5，fzf，gnome-terminal等）のインストール．
-5. エイリアス（`ce`）および補助関数（`dock`）の`.bashrc`への追加．
-
-※Dockerのグループ設定を反映させるため，インストール後に一度ログアウトし，再ログインする必要があります．
+※設定を反映させるため，インストール後に一度再ログインしてください．
 
 ## 使用方法
 
 ### GUIの起動
-
-ターミナルで以下のコマンドを入力するとGUIが起動します．
-
 ```bash
 ce
 ```
 
-### CLIからのクイックアタッチ
-
-`fzf`を利用して，起動中のコンテナを選択してシェルに入るための補助関数が提供されています．
-
+### CLIからのアタッチ
+`fzf`を利用して，起動中のコンテナを素早く選択できます．
 ```bash
 dock
 ```
@@ -64,22 +59,18 @@ dock
 - OS: Linux (Ubuntu推奨)
 - Python 3.x
 - Docker
-- (任意) NVIDIA GPU & Driver
-
-## プロジェクト構成
-
-リファクタリングにより階層を整理し，管理しやすくしています．
-
-- `main.py`: エントリーポイント．
-- `src/domain/`: エンティティとリポジトリのインターフェース定義．
-- `src/application/`: ユースケース（ビジネスロジック）の定義．
-- `src/infrastructure/`: Docker操作の具体的な実装．
-- `src/interfaces/gui/`: PyQt5によるUI実装．
-- `assets/`: 画像リソース．
 
 ## ライセンス
 
 [MIT License](LICENSE)
 
----
-※このプロジェクトの句読点には「，」と「．」を使用しています．
+[contributors-shield]: https://img.shields.io/github/contributors/m-shigemori/docker.svg?style=for-the-badge
+[contributors-url]: https://github.com/m-shigemori/docker/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/m-shigemori/docker.svg?style=for-the-badge
+[forks-url]: https://github.com/m-shigemori/docker/network/members
+[stars-shield]: https://img.shields.io/github/stars/m-shigemori/docker.svg?style=for-the-badge
+[stars-url]: https://github.com/m-shigemori/docker/stargazers
+[issues-shield]: https://img.shields.io/github/issues/m-shigemori/docker.svg?style=for-the-badge
+[issues-url]: https://github.com/m-shigemori/docker/issues
+[license-shield]: https://img.shields.io/github/license/m-shigemori/docker.svg?style=for-the-badge
+[license-url]: LICENSE
