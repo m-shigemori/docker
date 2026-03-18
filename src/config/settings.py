@@ -22,6 +22,7 @@ class StyleConfig:
         "frame_border": "rgba(255,255,255,0.3)",
         "control_btn": "rgba(60,60,60,0.8)",
         "start_btn": "rgba(46,204,113,0.8)",
+        "delete_btn": "rgba(231,76,60,0.8)",
         "action_btn": "rgba(52,152,219,0.8)",
         "running_text": "#2ecc71",
         "running_bg": "rgba(46,204,113,0.1)",
@@ -35,7 +36,7 @@ class StyleConfig:
 
     def __init__(self):
         self.img_dir = os.path.abspath(os.path.join(
-            os.path.dirname(__file__), "..", "img"
+            os.path.dirname(__file__), "..", "..", "assets", "img"
         ))
         self.IMAGE_PATH = ""
         self.refresh_image_path()

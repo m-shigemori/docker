@@ -2,12 +2,13 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QSizePolicy
 from PyQt5.QtCore import Qt
 
 class ContainerRow(QWidget):
-    def __init__(self, container, ui, config, on_action):
+    def __init__(self, container, ui, config, on_action, delete_mode=False):
         super().__init__()
         self.container = container
         self.ui = ui
         self.config = config
         self.on_action = on_action
+        self.delete_mode = delete_mode
         self._init_ui()
 
     def _init_ui(self):
@@ -45,17 +46,24 @@ class ContainerRow(QWidget):
         layout.setSpacing(6)
         layout.setAlignment(Qt.AlignCenter)
 
-        if self.container.is_running:
-            for text, action in [("■", "stop"), ("⚡", "exec")]:
-                btn = self.ui.button(text)
+        if self.delete_mode:
+            del_btn = self.ui.button("🗑️ Delete All", "delete")
+            del_btn.setFixedHeight(self.config.BUTTON_HEIGHT)
+            del_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+            del_btn.clicked.connect(lambda: self.on_action("delete_all", self.container))
+            layout.addWidget(del_btn)
+        else:
+            if self.container.is_running:
+                for text, action in [("■", "stop"), ("⚡", "exec")]:
+                    btn = self.ui.button(text)
+                    btn.setFixedHeight(self.config.BUTTON_HEIGHT)
+                    btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+                    btn.clicked.connect(lambda _, a=action: self.on_action(a, self.container.id))
+                    layout.addWidget(btn)
+            else:
+                btn = self.ui.button("▶ Start", "start")
                 btn.setFixedHeight(self.config.BUTTON_HEIGHT)
                 btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-                btn.clicked.connect(lambda _, a=action: self.on_action(a, self.container.id))
+                btn.clicked.connect(lambda: self.on_action("start", self.container.id))
                 layout.addWidget(btn)
-        else:
-            btn = self.ui.button("▶ Start", "start")
-            btn.setFixedHeight(self.config.BUTTON_HEIGHT)
-            btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-            btn.clicked.connect(lambda: self.on_action("start", self.container.id))
-            layout.addWidget(btn)
         return widget

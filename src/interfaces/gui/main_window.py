@@ -1,27 +1,26 @@
-import os
 from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QHBoxLayout,
-    QFrame, QDesktopWidget, QSizePolicy, QLabel
+    QWidget, QVBoxLayout, QHBoxLayout,
+    QFrame, QDesktopWidget, QSizePolicy, QLabel,
+    QMessageBox
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QCursor
 
-from scripts.docker_client import DockerClient
-from scripts.ui_style import UIStyle
-from scripts.ui_manager import UIManager
-from scripts.config import StyleConfig
-from scripts.widgets import ContainerRow
+from .ui_style import UIStyle
+from .ui_manager import UIManager
+from .widgets import ContainerRow
 
-class ContainerExecuter(QWidget):
-    def __init__(self):
+class MainWindow(QWidget):
+    def __init__(self, container_service, config):
         super().__init__()
-        self.client = DockerClient()
-        self.config = StyleConfig()
+        self.container_service = container_service
+        self.config = config
         self.ui = UIStyle(self.config)
         self.ui_manager = UIManager(self, self.config)
 
         self.img_label = None
         self.left_panel = None
+        self.delete_mode = False
 
         self.init_ui()
 
@@ -55,10 +54,14 @@ class ContainerExecuter(QWidget):
         self.config.refresh_image_path()
         self.ui_manager.fade_refresh(self.refresh_gui)
 
+    def toggle_delete_mode(self):
+        self.delete_mode = not self.delete_mode
+        self.refresh_gui()
+
     def refresh_gui(self):
         self._clear_layout(self.main_layout)
 
-        containers = self.client.list_containers()
+        containers = self.container_service.list_containers()
 
         self.left_panel = self.ui.frame()
         panel_layout = QVBoxLayout(self.left_panel)
@@ -67,11 +70,19 @@ class ContainerExecuter(QWidget):
 
         ctrl_layout = QHBoxLayout()
         ctrl_layout.setSpacing(10)
+        
         refresh_btn = self.ui.button("Refresh", "control")
         refresh_btn.clicked.connect(self.trigger_refresh)
+        
+        mode_btn_text = "Mode: Standard" if not self.delete_mode else "Mode: Edit"
+        mode_btn = self.ui.button(mode_btn_text, "control" if not self.delete_mode else "delete")
+        mode_btn.clicked.connect(self.toggle_delete_mode)
+
         close_btn = self.ui.button("Close", "control")
         close_btn.clicked.connect(self.close)
+        
         ctrl_layout.addWidget(refresh_btn)
+        ctrl_layout.addWidget(mode_btn)
         ctrl_layout.addWidget(close_btn)
         ctrl_layout.addStretch()
         panel_layout.addLayout(ctrl_layout)
@@ -105,7 +116,7 @@ class ContainerExecuter(QWidget):
         content_layout.setSpacing(12)
 
         for c in containers:
-            content_layout.addWidget(ContainerRow(c, self.ui, self.config, self._handle_action))
+            content_layout.addWidget(ContainerRow(c, self.ui, self.config, self._handle_action, self.delete_mode))
 
         content_layout.addStretch()
         scroll.setWidget(scroll_content)
@@ -121,14 +132,31 @@ class ContainerExecuter(QWidget):
 
         self.ui_manager.update_background(self.img_label, self.left_panel)
 
-    def _handle_action(self, action, container_id):
-        actions = {"start": self.client.start, "stop": self.client.stop, "exec": self.client.exec_shell}
-        if action in actions:
-            actions[action](container_id)
-            if action == "start":
-                self.trigger_refresh()
-            else:
-                self.refresh_gui()
+    def _handle_action(self, action, data):
+        if action == "start":
+            self.container_service.start_container(data)
+            self.trigger_refresh()
+        elif action == "stop":
+            self.container_service.stop_container(data)
+            self.refresh_gui()
+        elif action == "exec":
+            self.container_service.open_container_shell(data)
+        elif action == "delete_all":
+            reply = QMessageBox.question(self, 'Confirmation', 
+                                       f"Are you sure you want to delete container '{data.name}' and its image '{data.image}'?",
+                                       QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            if reply == QMessageBox.Yes:
+                try:
+                    self.container_service.remove_container(data.id)
+                    try:
+                        self.container_service.remove_image(data.image)
+                        QMessageBox.information(self, "Success", f"Container and Image '{data.image}' removed.")
+                    except Exception as img_e:
+                        QMessageBox.warning(self, "Warning", f"Container removed, but Image '{data.image}' could not be removed (might be in use by other containers).")
+                    
+                    self.refresh_gui()
+                except Exception as e:
+                    QMessageBox.critical(self, "Error", f"Failed to delete: {str(e)}")
 
     def _clear_layout(self, layout):
         while layout.count():
@@ -137,8 +165,3 @@ class ContainerExecuter(QWidget):
                 item.widget().deleteLater()
             elif item.layout():
                 self._clear_layout(item.layout())
-
-if __name__ == "__main__":
-    app = QApplication([])
-    ce = ContainerExecuter()
-    app.exec_()

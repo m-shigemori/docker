@@ -1,34 +1,50 @@
 #!/bin/bash
 set -e
 
-sudo apt-get update
-sudo apt-get install -y python3-pip fzf
+sudo apt-get install -y python3-pyqt5 fzf python3-pip gnome-terminal
 
-pip3 install PyQt5 --break-system-packages
+PROJECT_DIR=$(cd "$(dirname "$0")/.." && pwd)
 
-cat << 'EOF' >> ~/.bashrc
+MARKER="# ContainerExecuter Setup"
+if ! grep -q "$MARKER" ~/.bashrc; then
+    cat << EOF >> ~/.bashrc
 
-CONTAINER_LIST=$(docker ps --format "{{.ID}}\t{{.Names}}")
-CONTAINER_COUNT=$(echo "$CONTAINER_LIST" | grep -c .)
+$MARKER
+function dock()
+{
+  if [ "\$1" == "-h" ]; then
+    echo "Usage: 'dock' (interactive selection) or 'dock {container_id_or_name}'"
+    return
+  fi
 
-if [ "$CONTAINER_COUNT" -eq 1 ]; then
-    docker exec -it $(echo "$CONTAINER_LIST" | cut -f1) /bin/bash
+  if [ \$# -gt 0 ]; then
+    docker exec -it "\$1" /bin/bash
+    return
+  fi
 
-elif [ "$CONTAINER_COUNT" -gt 1 ]; then
-    SELECTED_CONTAINER=$(echo "$CONTAINER_LIST" | \
-        fzf \
-            --height=$((CONTAINER_COUNT + 1)) \
-            --layout=reverse-list \
-            --no-info \
-            --no-sort \
-            --border=none \
-            --prompt="")
+  local containers=\$(docker ps --format "{{.ID}}\t{{.Names}}\t{{.Image}}")
 
-    if [ -n "$SELECTED_CONTAINER" ]; then
-        docker exec -it $(echo "$SELECTED_CONTAINER" | cut -f1) /bin/bash
-    fi
-fi
+  if [ -z "\$containers" ]; then
+    echo "No running containers found."
+    return
+  fi
 
-alias ce='python3 ~/docker/control/app.py'
-fi
+  local count=\$(echo "\$containers" | wc -l)
+
+  if [ "\$count" -eq 1 ]; then
+    local target=\$(echo "\$containers" | awk '{print \$1}')
+    echo "Attaching to: \$target"
+    docker exec -it "\$target" /bin/bash
+    return
+  fi
+
+  local target=\$(echo "\$containers" | fzf --height 40% --reverse --header "Select a container to attach" --prompt "> " | awk '{print \$1}')
+
+  if [ -n "\$target" ]; then
+    docker exec -it "\$target" /bin/bash
+  fi
+}
+
+alias ce='python3 $PROJECT_DIR/main.py'
 EOF
+fi

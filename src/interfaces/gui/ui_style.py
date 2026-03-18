@@ -19,6 +19,7 @@ class UIStyle:
         type_styles = {
             "control": f"background: {self.config.COLORS['control_btn']}; padding: 0px 15px; height: {self.config.BUTTON_HEIGHT}px;",
             "start": f"background: {self.config.COLORS['start_btn']}; padding: 0px 15px; height: {self.config.BUTTON_HEIGHT}px;",
+            "delete": f"background: {self.config.COLORS['delete_btn']}; padding: 0px 15px; height: {self.config.BUTTON_HEIGHT}px;",
             "action": f"background: {self.config.COLORS['action_btn']}; height: {self.config.BUTTON_HEIGHT}px;",
         }
         btn.setStyleSheet(base_style + f"QPushButton {{ {type_styles.get(btn_type, type_styles['action'])} }}")
@@ -55,7 +56,7 @@ class UIStyle:
                 padding: 0px;
                 height: {self.config.BUTTON_HEIGHT}px;
             """,
-            "normal": f"color: #ffffff; font-size: 16px; height: {self.config.BUTTON_HEIGHT}px;",
+            "normal": "color: #ffffff; font-size: 16px; height: 42px;"
         }
         label.setStyleSheet(f"QLabel {{ {styles.get(label_type, styles['normal'])} }}")
         return label
