@@ -8,7 +8,7 @@
 
 [JA](README.md) | [EN](README.en.md)
 
-An intuitive GUI tool for Docker container management.
+An intuitive GUI tool for Docker container management, specifically designed for use with ROS 2 Humble and Jazzy.
 Built with PyQt5, it streamlines starting, stopping, and attaching to containers, while also providing a simplified way to perform bulk deletions of containers and their base images.
 
 ## Key Features
@@ -65,13 +65,13 @@ dock
 
 Background images are from "[Gakuen Idolmaster](https://gakuen.idolmaster-official.jp/)".
 
-[contributors-shield]: https://img.shields.io/github/contributors/m-shigemori/docker.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/m-shigemori/docker?style=for-the-badge
 [contributors-url]: https://github.com/m-shigemori/docker/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/m-shigemori/docker.svg?style=for-the-badge
+[forks-shield]: https://img.shields.io/github/forks/m-shigemori/docker?style=for-the-badge
 [forks-url]: https://github.com/m-shigemori/docker/network/members
-[stars-shield]: https://img.shields.io/github/stars/m-shigemori/docker.svg?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/m-shigemori/docker?style=for-the-badge
 [stars-url]: https://github.com/m-shigemori/docker/stargazers
-[issues-shield]: https://img.shields.io/github/issues/m-shigemori/docker.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/m-shigemori/docker?style=for-the-badge
 [issues-url]: https://github.com/m-shigemori/docker/issues
-[license-shield]: https://img.shields.io/github/license/m-shigemori/docker.svg?style=for-the-badge
-[license-url]: LICENSE
+[license-shield]: https://img.shields.io/github/license/m-shigemori/docker?style=for-the-badge
+[license-url]: https://github.com/m-shigemori/docker/blob/main/LICENSE

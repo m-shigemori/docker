@@ -9,7 +9,7 @@
 [JA](README.md) | [EN](README.en.md)
 
 Dockerコンテナの管理を直感的に行うためのGUIツールです．
-PyQt5を採用しており，コンテナの起動・停止・アタッチに加え，コンテナとベースイメージの一括削除を簡単に行うことができます．
+ROS 2 Humble および Jazzy での利用を想定しており，PyQt5を採用しています．コンテナの起動・停止・アタッチに加え，コンテナとベースイメージの一括削除を簡単に行うことができます．
 
 ## 主な機能
 
@@ -65,13 +65,13 @@ dock
 
 背景画像には「[学園アイドルマスター](https://gakuen.idolmaster-official.jp/)」の素材を使用させていただいております．
 
-[contributors-shield]: https://img.shields.io/github/contributors/m-shigemori/docker.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/m-shigemori/docker?style=for-the-badge
 [contributors-url]: https://github.com/m-shigemori/docker/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/m-shigemori/docker.svg?style=for-the-badge
+[forks-shield]: https://img.shields.io/github/forks/m-shigemori/docker?style=for-the-badge
 [forks-url]: https://github.com/m-shigemori/docker/network/members
-[stars-shield]: https://img.shields.io/github/stars/m-shigemori/docker.svg?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/m-shigemori/docker?style=for-the-badge
 [stars-url]: https://github.com/m-shigemori/docker/stargazers
-[issues-shield]: https://img.shields.io/github/issues/m-shigemori/docker.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/m-shigemori/docker?style=for-the-badge
 [issues-url]: https://github.com/m-shigemori/docker/issues
-[license-shield]: https://img.shields.io/github/license/m-shigemori/docker.svg?style=for-the-badge
-[license-url]: LICENSE
+[license-shield]: https://img.shields.io/github/license/m-shigemori/docker?style=for-the-badge
+[license-url]: https://github.com/m-shigemori/docker/blob/main/LICENSE
