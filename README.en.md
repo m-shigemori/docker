@@ -55,11 +55,11 @@ dock
 
 You can easily build optimized Docker containers for each project using the scripts in `container/Dockerfiles`.
 
-### 1. Project Naming (Rename Directory)
-Rename the `container` directory to match your project name. This name will be used as the Docker image and container (project) name.
+### 1. Project Naming (Copy Directory)
+Copy the `container` directory to match your project name. This name will be used as the Docker image and container (project) name.
 
 ```bash
-mv container/ <project_name>/
+cp -r container/ <project_name>/
 ```
 
 ### 2. Configuration (.env)
