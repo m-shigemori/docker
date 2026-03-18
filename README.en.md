@@ -23,7 +23,7 @@ Built with PyQt5, it streamlines starting, stopping, and attaching to containers
 
 | Standard Mode | Edit Mode |
 | :---: | :---: |
-| ![Standard Mode](docs/standard_mode.png) | ![Edit Mode](docs/edit_mode.png) |
+| <img src="docs/standard_mode.png" width="400"> | <img src="docs/edit_mode.png" width="400"> |
 | Daily operations such as starting, stopping, and accessing the shell. | Environment cleanup and management. |
 
 ## Installation
