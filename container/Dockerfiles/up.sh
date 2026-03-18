@@ -4,7 +4,7 @@ DIR=$(cd $(dirname "$0"); pwd)
 NAME=$(basename "$(dirname "$DIR")")
 
 if [ -f "${DIR}/.env" ]; then
-    export $(grep -v '^
+    export $(grep -v '^#' "${DIR}/.env" | xargs)
 fi
 
 export USE_GPU=${USE_GPU:-cpu}
