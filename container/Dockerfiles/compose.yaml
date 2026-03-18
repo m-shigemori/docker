@@ -10,13 +10,8 @@ x-base: &base
   environment:
     USER_NAME: ${USER_NAME}
     CONTAINER_NAME: ${PARENT_DIR_NAME}
-    GH_TOKEN: ${GITHUB_TOKEN}
     DISPLAY: ${DISPLAY}
     PULSE_SERVER: unix:/run/user/${LOCAL_UID}/pulse/native
-    ROS_DOMAIN_ID: ${ROS_DOMAIN_ID}
-    NVIDIA_VISIBLE_DEVICES: all
-    NVIDIA_DRIVER_CAPABILITIES: all
-
   volumes:
     - /dev:/dev
     - /tmp/.X11-unix:/tmp/.X11-unix
