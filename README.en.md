@@ -51,6 +51,33 @@ Use the provided helper function to quickly select and enter a running container
 dock
 ```
 
+## Docker Container Setup
+
+You can easily build optimized Docker containers for each project using the scripts in `container/Dockerfiles`.
+
+### 1. Project Naming (Rename Directory)
+Rename the `container` directory to match your project name. This name will be used as the Docker image and container (project) name.
+
+```bash
+mv container/ <project_name>/
+```
+
+### 2. Configuration (.env)
+Edit `<project_name>/Dockerfiles/.env` to configure settings such as ROS distribution and GPU usage.
+
+```bash
+# Example: .env
+ROS_DISTRO=jazzy
+USE_GPU=true
+```
+
+### 3. Launch Container
+Run the following script to build and start the container.
+
+```bash
+bash <project_name>/Dockerfiles/up.sh
+```
+
 ## Requirements
 
 - OS: Linux (Ubuntu recommended)

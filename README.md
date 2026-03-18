@@ -51,6 +51,34 @@ ce
 dock
 ```
 
+## Docker コンテナの構築
+
+`container/Dockerfiles` にあるスクリプトを使用して，プロジェクトごとに最適化された Docker コンテナを簡単に構築できます．
+
+### 1. プロジェクト名の設定（ディレクトリ名の変更）
+`container` ディレクトリの名前を，プロジェクト名に合わせて変更してください．
+このディレクトリ名が，Docker イメージ名およびコンテナ名（プロジェクト名）として使用されます．
+
+```bash
+mv container/ <project_name>/
+```
+
+### 2. 環境設定（.env）
+`<project_name>/Dockerfiles/.env` を編集して，ROS のディストリビューションや GPU の使用有無などを設定します．
+
+```bash
+# 例: .env
+ROS_DISTRO=jazzy
+USE_GPU=true
+```
+
+### 3. コンテナの起動
+以下のスクリプトを実行して，コンテナをビルド・起動します．
+
+```bash
+bash <project_name>/Dockerfiles/up.sh
+```
+
 ## 必要条件
 
 - OS: Linux (Ubuntu推奨)
