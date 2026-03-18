@@ -21,13 +21,10 @@ PyQt5を採用しており，コンテナの起動・停止・アタッチに加
 
 ## UI モード
 
-### Standard モード
-起動，停止，シェル接続などの日常的な操作に使用します．
-![Standard Mode](docs/standard_mode.png)
-
-### Edit モード
-不要になったコンテナやイメージを整理する際に使用します．
-![Edit Mode](docs/edit_mode.png)
+| Standard モード | Edit モード |
+| :---: | :---: |
+| ![Standard Mode](docs/standard_mode.png) | ![Edit Mode](docs/edit_mode.png) |
+| 起動，停止，シェル接続などの日常的な操作に使用します． | 不要になったコンテナやイメージを整理する際に使用します． |
 
 ## インストール
 
@@ -63,6 +60,10 @@ dock
 ## ライセンス
 
 [MIT License](LICENSE)
+
+## Special Thanks
+
+背景画像には「[学園アイドルマスター](https://gakuen.idolmaster-official.jp/)」の素材を使用させていただいております．
 
 [contributors-shield]: https://img.shields.io/github/contributors/m-shigemori/docker.svg?style=for-the-badge
 [contributors-url]: https://github.com/m-shigemori/docker/graphs/contributors

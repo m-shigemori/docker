@@ -21,13 +21,10 @@ Built with PyQt5, it streamlines starting, stopping, and attaching to containers
 
 ## UI Modes
 
-### Standard Mode
-Daily operations such as starting, stopping, and accessing the shell.
-![Standard Mode](docs/standard_mode.png)
-
-### Edit Mode
-Environment cleanup and management.
-![Edit Mode](docs/edit_mode.png)
+| Standard Mode | Edit Mode |
+| :---: | :---: |
+| ![Standard Mode](docs/standard_mode.png) | ![Edit Mode](docs/edit_mode.png) |
+| Daily operations such as starting, stopping, and accessing the shell. | Environment cleanup and management. |
 
 ## Installation
 
@@ -63,6 +60,10 @@ dock
 ## License
 
 [MIT License](LICENSE)
+
+## Special Thanks
+
+Background images are from "[Gakuen Idolmaster](https://gakuen.idolmaster-official.jp/)".
 
 [contributors-shield]: https://img.shields.io/github/contributors/m-shigemori/docker.svg?style=for-the-badge
 [contributors-url]: https://github.com/m-shigemori/docker/graphs/contributors
