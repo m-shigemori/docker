@@ -9,7 +9,7 @@ fi
 
 if [ ! -f /etc/apt/sources.list.d/nvidia-container-toolkit.list ]; then
     curl -sLk https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
-        sed 's
+        sed 's#deb https://#deb [signed-by=/etc/apt/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
         sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 fi
 
