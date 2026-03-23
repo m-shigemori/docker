@@ -18,7 +18,7 @@ x-base: &base
     - /run/user/${LOCAL_UID}/pulse:/run/user/${LOCAL_UID}/pulse
     - ../src:/home/${USER_NAME}/colcon_ws/src
     - ${HOME}/.ssh:/home/${USER_NAME}/.ssh:ro
-    - ${HOME}/.gitconfig:/home/${USER_NAME}/.gitconfig
+    - ./.gitconfig_sync:/home/${USER_NAME}/.gitconfig_host:ro
 
   stdin_open: true
   tty: true

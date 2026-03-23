@@ -60,6 +60,11 @@ RUN cat <<'EOF' >> ${HOME}/.bashrc
 export EDITOR=nano
 export ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
 
+# Copy .gitconfig from host to avoid 'Device or resource busy' bind mount issues
+if [ -f ~/.gitconfig_host ] && [ ! -f ~/.gitconfig ]; then
+    cp ~/.gitconfig_host ~/.gitconfig
+fi
+
 source /opt/ros/${ROS_DISTRO}/setup.bash
 source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
 [ -f ~/colcon_ws/install/setup.bash ] && source ~/colcon_ws/install/setup.bash

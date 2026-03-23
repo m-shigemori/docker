@@ -15,6 +15,12 @@ export LOCAL_GID=$(id -g)
 export IMAGE_NAME="sobits/${NAME}"
 export PARENT_DIR_NAME="${NAME}"
 
+if [ -f "${HOME}/.gitconfig" ]; then
+    cp "${HOME}/.gitconfig" "${DIR}/.gitconfig_sync"
+else
+    touch "${DIR}/.gitconfig_sync"
+fi
+
 if [ "${USE_GPU}" = "true" ] || [ "${USE_GPU}" = "gpu" ]; then
     export PROFILE="gpu"
     export USE_GPU="gpu"
