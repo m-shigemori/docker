@@ -50,7 +50,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN if [ -n "${LOCAL_UID}" ] && getent passwd ${LOCAL_UID}; then userdel -r $(getent passwd ${LOCAL_UID} | cut -d: -f1); fi \
  && if [ -n "${LOCAL_GID}" ] && getent group ${LOCAL_GID}; then groupdel $(getent group ${LOCAL_GID} | cut -d: -f1); fi \
  && groupadd -g ${LOCAL_GID:-1000} ${USER_NAME} \
- && useradd -u ${LOCAL_UID:-1000} -g ${LOCAL_GID:-1000} -m -s /bin/bash ${USER_NAME} \
+ && useradd -u ${LOCAL_UID} -g ${LOCAL_GID} -G dialout,video,audio,plugdev -m -s /bin/bash ${USER_NAME} \
  && echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USER_NAME} \
  && chmod 0440 /etc/sudoers.d/${USER_NAME} \
  && mkdir -p ${HOME}/colcon_ws/src ${HOME}/.ros/log \
@@ -60,11 +60,6 @@ RUN cat <<'EOF' >> ${HOME}/.bashrc
 export EDITOR=nano
 export ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
 
-# Copy .gitconfig from host to avoid 'Device or resource busy' bind mount issues
-if [ -f ~/.gitconfig_host ] && [ ! -f ~/.gitconfig ]; then
-    cp ~/.gitconfig_host ~/.gitconfig
-fi
-
 source /opt/ros/${ROS_DISTRO}/setup.bash
 source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
 [ -f ~/colcon_ws/install/setup.bash ] && source ~/colcon_ws/install/setup.bash
@@ -72,12 +67,12 @@ EOF
 
 RUN cat <<'EOF' >> ${HOME}/.bash_aliases
 export PS1="\[\e[1;36;48;5;232m\]\${CONTAINER_NAME:-docker}\[\e[0m\]\[\e[01;32m\]@\u\[\e[0m\]:\[\e[1;34m\]\w\[\e[0m\]\$ "
+
 alias copy="xsel -bi"
 alias sb="source ~/.bashrc"
 
 alias cw="cd ~/colcon_ws"
 alias cs="cd ~/colcon_ws/src"
-
 alias cb="cw && colcon build --symlink-install"
 alias cbp="cw && colcon build --symlink-install --packages-select"
 
@@ -85,14 +80,14 @@ alias rn="ros2 node list"
 alias rni="ros2 node info"
 
 alias rt="ros2 topic list"
-alias re="ros2 topic echo"
 alias ri="ros2 topic info"
+alias re="ros2 topic echo"
 
 alias rs="ros2 service list"
-alias rst="ros2 service type"
+alias rsi="ros2 service info"
 
 alias ra="ros2 action list"
-alias rat="ros2 action type"
+alias rai="ros2 action info"
 
 alias rshow="ros2 interface show"
 
