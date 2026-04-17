@@ -15,12 +15,6 @@ export LOCAL_GID=$(id -g)
 export IMAGE_NAME="sobits/${NAME}"
 export PARENT_DIR_NAME="${NAME}"
 
-if [ -f "${HOME}/.gitconfig" ]; then
-    cp "${HOME}/.gitconfig" "${DIR}/.gitconfig_sync"
-else
-    touch "${DIR}/.gitconfig_sync"
-fi
-
 if [ "${USE_GPU}" = "true" ] || [ "${USE_GPU}" = "gpu" ]; then
     export PROFILE="gpu"
     export USE_GPU="gpu"
@@ -31,6 +25,12 @@ fi
 
 echo "--- Starting with profile: ${PROFILE} ---"
 
-mkdir -p "${DIR}/../src"
+SRC_DIR="${DIR}/../src"
+mkdir -p "${SRC_DIR}"
+
+if [ ! -d "${SRC_DIR}/gemini_mcp_suite" ]; then
+    echo "--- Cloning gemini_mcp_suite into ${SRC_DIR} ---"
+    git clone https://github.com/m-shigemori/gemini_mcp_suite.git "${SRC_DIR}/gemini_mcp_suite"
+fi
 
 docker compose -p "${NAME}" -f "${DIR}/compose.yaml" --profile "${PROFILE}" up -d --build --remove-orphans
