@@ -29,23 +29,23 @@ ENV ROS_DISTRO=${ROS_DISTRO} \
     NVIDIA_VISIBLE_DEVICES=all \
     NVIDIA_DRIVER_CAPABILITIES=all
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|http://ftp.udx.icscoe.jp/Linux/ubuntu/|g' /etc/apt/sources.list.d/ubuntu.sources \
+ && sed -i 's|http://security.ubuntu.com/ubuntu/|http://ftp.udx.icscoe.jp/Linux/ubuntu/|g' /etc/apt/sources.list.d/ubuntu.sources \
+ && apt-get update && apt-get install -y --no-install-recommends \
     curl gnupg2 lsb-release sudo tree bash-completion usbutils nano gedit gh \
     python3-pip xsel libasound2-plugins libportaudio2 \
- && rm -rf /var/lib/apt/lists/*
-
-RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
+ && curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
     -o /usr/share/keyrings/ros-archive-keyring.gpg \
  && echo "deb [arch=$(dpkg --print-architecture) \
     signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] \
     http://packages.ros.org/ros2/ubuntu \
     $(. /etc/os-release && echo $UBUNTU_CODENAME) main" \
-    > /etc/apt/sources.list.d/ros2.list
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
+    > /etc/apt/sources.list.d/ros2.list \
+ && apt-get update && apt-get install -y --no-install-recommends \
     ros-${ROS_DISTRO}-desktop ros-dev-tools python3-rosdep \
- && rm -rf /var/lib/apt/lists/* \
- && echo "[install]\nbreak-system-packages = true" > /etc/pip.conf
+ && echo "[install]\nbreak-system-packages = true" > /etc/pip.conf \
+ && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+ && python3 -m pip cache purge
 
 RUN if [ -n "${LOCAL_UID}" ] && getent passwd ${LOCAL_UID}; then userdel -r $(getent passwd ${LOCAL_UID} | cut -d: -f1); fi \
  && if [ -n "${LOCAL_GID}" ] && getent group ${LOCAL_GID}; then groupdel $(getent group ${LOCAL_GID} | cut -d: -f1); fi \
