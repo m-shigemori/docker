@@ -14,11 +14,10 @@ x-base: &base
     PULSE_SERVER: unix:/run/user/${LOCAL_UID}/pulse/native
   volumes:
     - /dev:/dev
+    - /run/udev:/run/udev:ro
     - /tmp/.X11-unix:/tmp/.X11-unix
     - /run/user/${LOCAL_UID}/pulse:/run/user/${LOCAL_UID}/pulse
     - ../src:/home/${USER_NAME}/colcon_ws/src
-    - ${HOME}/.ssh:/home/${USER_NAME}/.ssh:ro
-    - ./.gitconfig_sync:/home/${USER_NAME}/.gitconfig_host:ro
 
   stdin_open: true
   tty: true
