@@ -9,10 +9,10 @@ fi
 
 export USE_GPU=${USE_GPU:-cpu}
 export ROS_DISTRO=${ROS_DISTRO:-humble}
-export USER_NAME=${USER_NAME:-sobits}
+export USER_NAME=${USER_NAME:-peru}
 export LOCAL_UID=$(id -u)
 export LOCAL_GID=$(id -g)
-export IMAGE_NAME="sobits/${NAME}"
+export IMAGE_NAME="peru/${NAME}"
 export PARENT_DIR_NAME="${NAME}"
 
 if [ "${USE_GPU}" = "true" ] || [ "${USE_GPU}" = "gpu" ]; then
