@@ -1,16 +1,16 @@
 #!/bin/bash
 set -e
 
-sudo apt-get update
-sudo apt-get install -y ca-certificates curl gnupg lsb-release
+sudo apt update
+sudo apt install -y ca-certificates
 
-sudo install -m 0755 -d /etc/apt/keyrings
+sudo install -m 755 -d /etc/apt/keyrings
 
 if ! command -v docker &> /dev/null; then
     bash setup/install_docker.sh
 fi
 
-if lspci | grep -i nvidia &> /dev/null; then
+if nvidia-smi &> /dev/null; then
     read -p "Install NVIDIA Container Toolkit? (y/n): " choice
     if [[ "$choice" =~ ^[Yy]$ ]]; then
         bash setup/install_nvidia_docker.sh
