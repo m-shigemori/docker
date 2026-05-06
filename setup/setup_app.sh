@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-sudo apt-get install -y python3-pyqt5 fzf python3-pip gnome-terminal
+sudo apt-get install -y python3-pyqt5 fzf
 
 PROJECT_DIR=$(cd "$(dirname "$0")/.." && pwd)
 

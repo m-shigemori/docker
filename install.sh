@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-sudo apt update
-sudo apt install -y ca-certificates
+sudo apt-get update
+sudo apt-get install -y ca-certificates
 
 sudo install -m 755 -d /etc/apt/keyrings
 
@@ -19,7 +19,7 @@ fi
 
 bash setup/setup_app.sh
 
-if getent group docker > /dev/null; then
+if getent group docker &> /dev/null; then
     if ! groups $USER | grep -q "\bdocker\b"; then
         sudo usermod -aG docker $USER
     fi
