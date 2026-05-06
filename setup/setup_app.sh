@@ -1,15 +1,13 @@
 #!/bin/bash
 set -e
 
-sudo apt-get install -y python3-pyqt5 fzf
+sudo apt-get install -y python3-pyqt6 fzf
 
-PROJECT_DIR=$(cd "$(dirname "$0")/.." && pwd)
+PROJECT_DIR=$(pwd)
 
-MARKER="# ContainerExecuter Setup"
-if ! grep -q "$MARKER" ~/.bashrc; then
+if ! grep -q "function dock()" ~/.bashrc; then
     cat << EOF >> ~/.bashrc
 
-$MARKER
 function dock()
 {
   if [ "\$1" == "-h" ]; then
