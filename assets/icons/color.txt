@@ -1,0 +1,6 @@
+boot.svg	#3eb370
+close.svg	#4a3a35
+reflesh.svg	#4a3a35
+stop.svg	#767676
+bin.svg		#4a3a35
+play.svg	#4a3a35
