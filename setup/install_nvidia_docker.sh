@@ -6,7 +6,7 @@ curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | \
 sudo chmod a+r /etc/apt/keyrings/nvidia-container-toolkit-keyring.gpg
 
 curl -fsSL https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
-    sed 's#deb https://#deb [signed-by=/etc/apt/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+    sed 's|deb https://|deb [signed-by=/etc/apt/keyrings/nvidia-container-toolkit-keyring.gpg] https://|g' | \
     sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list &> /dev/null
 
 sudo apt-get update
