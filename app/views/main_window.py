@@ -5,8 +5,9 @@ class MainWindow(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.geometry("900x600")
-        self.title("ContainerExecuter")
+        self.geometry("960x540")
+        self.minsize(960, 540)
+        self.title("")
 
         self.ui = UIManager(self)
         self.update_pending = False
