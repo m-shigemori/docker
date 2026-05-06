@@ -1,27 +1,20 @@
-import customtkinter as ctk
+from PyQt6.QtWidgets import QMainWindow, QWidget
+from PyQt6.QtCore import QSize
 from app.views.ui_manager import UIManager
 
-class MainWindow(ctk.CTk):
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.geometry("960x540")
-        self.minsize(960, 540)
-        self.title("")
+        self.setMinimumSize(QSize(960, 540))
+        self.resize(960, 540)
+        self.setWindowTitle("")
 
-        self.ui = UIManager(self)
-        self.update_pending = False
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
 
-        self.bind("<Configure>", self.on_resize)
+        self.ui = UIManager(self.central_widget)
 
-    def on_resize(self, e):
-        if e.widget == self and not self.update_pending:
-            self.update_pending = True
-            self.after(10, self.do_update)
-
-    def do_update(self):
-        self.render()
-        self.update_pending = False
-
-    def render(self):
-        self.ui.update(self.winfo_width(), self.winfo_height())
+    def resizeEvent(self, event):
+        self.ui.update(self.central_widget.width(), self.central_widget.height())
+        super().resizeEvent(event)
