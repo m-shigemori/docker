@@ -1,6 +1,6 @@
 export PS1="\[\e[1;36;48;5;232m\]\${CONTAINER_NAME:-docker}\[\e[0m\]\[\e[01;32m\]@\u\[\e[0m\]:\[\e[1;34m\]\w\[\e[0m\]\$ "
 
-alias copy="xsel -bi"
+alias copy='wl-copy'
 alias sb="source ~/.bashrc"
 
 alias cw="cd ~/colcon_ws"
