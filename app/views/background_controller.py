@@ -4,12 +4,13 @@ from PyQt6.QtWidgets import QWidget, QLabel, QGraphicsOpacityEffect
 from PyQt6.QtGui import QPixmap, QImage, QPainter, QColor
 from PyQt6.QtCore import Qt, QPropertyAnimation
 from PIL import Image, ImageFilter
+from app.config import IMAGES_DIR
 
 class BackgroundController:
     def __init__(self, master):
         self.master = master
         
-        img_dir = "assets/images"
+        img_dir = IMAGES_DIR
         self.all_image_paths = [os.path.join(img_dir, f) for f in os.listdir(img_dir) if f.endswith(".jpg")]
         
         self.current_image_path = random.choice(self.all_image_paths)
@@ -29,7 +30,9 @@ class BackgroundController:
         self.is_animating = False
 
     def refresh(self, update_callback):
-        if self.is_animating: return
+        if self.is_animating:
+            return
+
         self.is_animating = True
         
         self.fade_anim = QPropertyAnimation(self.bg_effect, b"opacity")
@@ -80,9 +83,12 @@ class BackgroundController:
         self.panel_bg.raise_()
 
     def _pil_to_pixmap(self, pil_img):
-        if pil_img.mode != "RGBA": pil_img = pil_img.convert("RGBA")
+        if pil_img.mode != "RGBA":
+            pil_img = pil_img.convert("RGBA")
+
         data = pil_img.tobytes("raw", "RGBA")
         qimage = QImage(data, pil_img.width, pil_img.height, QImage.Format.Format_RGBA8888)
+
         return QPixmap.fromImage(qimage)
 
     def _create_glass_pixmap(self, region_img, w, h):
@@ -114,9 +120,11 @@ class BackgroundController:
         nw, nh = int(iw * ratio), int(ih * ratio)
         res = img.resize((nw, nh), Image.Resampling.BILINEAR)
         l, t = (nw - tw) / 2, (nh - th) / 2
+
         return res.crop((l, t, l + tw, t + th))
 
     def _height_fit(self, img, th):
         iw, ih = img.size
         nw = int(iw * (th / ih))
+
         return img.resize((nw, th), Image.Resampling.BILINEAR)

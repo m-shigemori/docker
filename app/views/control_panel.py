@@ -1,7 +1,9 @@
+import os
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QWidget, QFrame, QGraphicsDropShadowEffect
 from PyQt6.QtGui import QColor, QIcon
 from PyQt6.QtCore import Qt, QSize
 from app.views.components import create_custom_button
+from app.config import ICONS_DIR
 
 class ControlPanelManager:
     def __init__(self, master):
@@ -19,10 +21,10 @@ class ControlPanelManager:
         self.row_layout.setContentsMargins(5, 5, 5, 10)
         self.row_layout.setSpacing(10)
         
-        self.btn_refresh = create_custom_button("Refresh", "assets/icons/reflesh.svg")
-        self.btn_toggle = create_custom_button("Operation", "assets/icons/operation.svg")
-        self.btn_view_mode = create_custom_button("", "assets/icons/image.svg")
-        self.btn_close = create_custom_button("Close", "assets/icons/close.svg")
+        self.btn_refresh = create_custom_button("Refresh", os.path.join(ICONS_DIR, "reflesh.svg"))
+        self.btn_toggle = create_custom_button("Operation", os.path.join(ICONS_DIR, "operation.svg"))
+        self.btn_view_mode = create_custom_button("", os.path.join(ICONS_DIR, "image.svg"))
+        self.btn_close = create_custom_button("Close", os.path.join(ICONS_DIR, "close.svg"))
         
         self.btn_view_mode.hide()
         
@@ -50,15 +52,15 @@ class ControlPanelManager:
     def toggle_mode(self, is_delete_mode):
         if is_delete_mode:
             self.btn_toggle.set_text("Delete")
-            self.btn_toggle.icon_label.setProperty("path", "assets/icons/bin.svg")
+            self.btn_toggle.icon_label.setProperty("path", os.path.join(ICONS_DIR, "bin.svg"))
             self.btn_view_mode.show()
         else:
             self.btn_toggle.set_text("Operation")
-            self.btn_toggle.icon_label.setProperty("path", "assets/icons/operation.svg")
+            self.btn_toggle.icon_label.setProperty("path", os.path.join(ICONS_DIR, "operation.svg"))
             self.btn_view_mode.hide()
 
     def update_view_icon(self, view_mode):
-        icon_path = "assets/icons/container.svg" if view_mode == "images" else "assets/icons/image.svg"
+        icon_path = os.path.join(ICONS_DIR, "container.svg") if view_mode == "images" else os.path.join(ICONS_DIR, "image.svg")
         self.btn_view_mode.icon_label.setProperty("path", icon_path)
 
     def update_styles(self, btn_w, btn_h, icon_s, btn_style, normal_style, hover_style):

@@ -1,7 +1,9 @@
+import os
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QScrollArea, QGraphicsColorizeEffect
 from PyQt6.QtGui import QColor, QIcon
 from PyQt6.QtCore import Qt, QSize, pyqtSignal
 from app.views.components import create_custom_button
+from app.config import ICONS_DIR
 
 class ContainerRow(QWidget):
     action_triggered = pyqtSignal(str, str)
@@ -9,6 +11,7 @@ class ContainerRow(QWidget):
 
     def __init__(self, item_id, name, state, is_delete_mode, is_image=False):
         super().__init__()
+
         self.item_id = item_id
         self.name = name
         self.state = state
@@ -38,13 +41,13 @@ class ContainerRow(QWidget):
         self.state_text.setFixedWidth(75)
         
         if self.is_image:
-            self.icon_path = "assets/icons/operation.svg"
+            self.icon_path = os.path.join(ICONS_DIR, "operation.svg")
             self.base_color = "#4a3a35"
         elif self.state == "running":
-            self.icon_path = "assets/icons/boot.svg"
+            self.icon_path = os.path.join(ICONS_DIR, "boot.svg")
             self.base_color = "#258c6d"
         else:
-            self.icon_path = "assets/icons/down.svg"
+            self.icon_path = os.path.join(ICONS_DIR, "down.svg")
             self.base_color = "#767676"
             
         self.state_icon.setProperty("path", self.icon_path)
@@ -91,29 +94,33 @@ class ContainerRow(QWidget):
     def _build_buttons(self):
         for btn in self.buttons:
             btn.deleteLater()
+
         self.buttons = []
 
         if self.is_delete_mode:
-            btn = create_custom_button("Delete", "assets/icons/note.svg")
+            btn = create_custom_button("Delete", os.path.join(ICONS_DIR, "note.svg"))
             btn.setProperty("special_color", "red")
             btn.clicked.connect(lambda: self.action_triggered.emit("delete", self.item_id))
             self.slot2_layout.addWidget(btn)
             self.buttons.append(btn)
+
         elif self.is_image:
             pass
+
         elif self.state == "running":
-            btn_exec = create_custom_button("Exec", "assets/icons/exec.svg")
+            btn_exec = create_custom_button("Exec", os.path.join(ICONS_DIR, "exec.svg"))
             btn_exec.clicked.connect(lambda: self.action_triggered.emit("exec", self.item_id))
             
-            btn_stop = create_custom_button("Stop", "assets/icons/stop.svg")
+            btn_stop = create_custom_button("Stop", os.path.join(ICONS_DIR, "stop.svg"))
             btn_stop.setProperty("special_color", "red")
             btn_stop.clicked.connect(lambda: self.action_triggered.emit("stop", self.item_id))
             
             self.slot1_layout.addWidget(btn_exec)
             self.slot2_layout.addWidget(btn_stop)
             self.buttons.extend([btn_exec, btn_stop])
+
         else:
-            btn_start = create_custom_button("Start", "assets/icons/start.svg")
+            btn_start = create_custom_button("Start", os.path.join(ICONS_DIR, "start.svg"))
             btn_start.clicked.connect(lambda: self.action_triggered.emit("start", self.item_id))
             
             self.slot2_layout.addWidget(btn_start)
@@ -180,12 +187,14 @@ class ContainerListManager:
             item = self.scroll_layout.takeAt(0)
             if item.widget():
                 item.widget().deleteLater()
+
         self.container_rows = []
 
     def create_row(self, item_id, name, state, is_delete_mode, is_image=False):
         row = ContainerRow(item_id, name, state, is_delete_mode, is_image)
         self.scroll_layout.insertWidget(self.scroll_layout.count() - 1, row)
         self.container_rows.append(row)
+
         return row
 
     def update_styles(self, fs, icon_s, btn_h, btn_style, hover_style, header_style, btn_w):
