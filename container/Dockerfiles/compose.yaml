@@ -1,55 +1,32 @@
-x-base: &base
-  container_name: ${PARENT_DIR_NAME}
+x-base: &base_config
+  container_name: ${NAME}
 
-  network_mode: host
-  privileged: true
-  shm_size: 2g
-
-  user: "${LOCAL_UID}:${LOCAL_GID}"
-
-  environment:
-    USER_NAME: ${USER_NAME}
-    CONTAINER_NAME: ${PARENT_DIR_NAME}
-    DISPLAY: ${DISPLAY}
-    PULSE_SERVER: unix:/run/user/${LOCAL_UID}/pulse/native
-  volumes:
-    - /dev:/dev
-    - /run/udev:/run/udev:ro
-    - /tmp/.X11-unix:/tmp/.X11-unix
-    - /run/user/${LOCAL_UID}/pulse:/run/user/${LOCAL_UID}/pulse
-    - ../src:/home/${USER_NAME}/colcon_ws/src
+  build:
+    context: .
+    args:
+      ROS_DISTRO: ${ROS_DISTRO}
+      USER_NAME: ${USER_NAME}
+      USER_ID: ${USER_ID}
+      GROUP_ID: ${GROUP_ID}
 
   stdin_open: true
   tty: true
 
-services:
-  ros2:
-    <<: *base
-    image: ${IMAGE_NAME}:cpu
-    build:
-      context: .
-      args:
-        ROS_DISTRO: ${ROS_DISTRO}
-        CUDA_VER: ${CUDA_VER}
-        ROS_DOMAIN_ID: ${ROS_DOMAIN_ID}
-        USER_NAME: ${USER_NAME}
-        LOCAL_UID: ${LOCAL_UID}
-        LOCAL_GID: ${LOCAL_GID}
-        USE_GPU: ${USE_GPU}
-    profiles: ["cpu"]
+  volumes:
+    - /tmp/.X11-unix:/tmp/.X11-unix
+    - ../src:/home/${USER_NAME}/colcon_ws/src
 
-  ros2_gpu:
-    <<: *base
-    image: ${IMAGE_NAME}:gpu
-    build:
-      context: .
-      args:
-        ROS_DISTRO: ${ROS_DISTRO}
-        CUDA_VER: ${CUDA_VER}
-        ROS_DOMAIN_ID: ${ROS_DOMAIN_ID}
-        USER_NAME: ${USER_NAME}
-        LOCAL_UID: ${LOCAL_UID}
-        LOCAL_GID: ${LOCAL_GID}
-        USE_GPU: ${USE_GPU}
-    gpus: all
+  environment:
+    CONTAINER_NAME: ${NAME}
+    DISPLAY: ${DISPLAY}
+
+services:
+  cpu:
+    <<: *base_config
+    profiles: ["cpu"]
+    image: ${IMAGE_NAME}:cpu
+
+  gpu:
+    <<: *base_config
     profiles: ["gpu"]
+    image: ${IMAGE_NAME}:gpu
