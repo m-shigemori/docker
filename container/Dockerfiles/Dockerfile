@@ -6,27 +6,33 @@ FROM ubuntu:22.04 AS base_humble
 
 FROM base_${ROS_DISTRO}
 
+ARG UBUNTU_VER
+ARG ROS_DISTRO
+ARG ROS_DOMAIN_ID
+
 ARG USER_NAME
 ARG USER_ID
 ARG GROUP_ID
-ARG ROS_DISTRO
-ARG ROS_DOMAIN_ID
+
 ARG DEVICE=cpu
 ARG CUDA_VER=12.8.1
+
+ENV UBUNTU_VER=${UBUNTU_VER} \
+    ROS_DISTRO=${ROS_DISTRO} \
+    ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
+
+ENV USER_NAME=${USER_NAME} \
+    HOME=/home/${USER_NAME} \
+    PYTHONDONTWRITEBYTECODE=1
 
 ENV LC_ALL=C.UTF-8 \
     LANG=C.UTF-8 \
     TZ=Asia/Tokyo
 
-ENV USER_NAME=${USER_NAME} \
-    HOME=/home/${USER_NAME}
-
-ENV ROS_DISTRO=${ROS_DISTRO} \
-    ROS_DOMAIN_ID=${ROS_DOMAIN_ID} \
-    PYTHONDONTWRITEBYTECODE=1
-
 ENV NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES:-all} \
-    NVIDIA_DRIVER_CAPABILITIES=${NVIDIA_DRIVER_CAPABILITIES:-all}
+    NVIDIA_DRIVER_CAPABILITIES=${NVIDIA_DRIVER_CAPABILITIES:-all} \
+    PATH=/usr/local/cuda/bin:${PATH} \
+    LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}
 
 RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|http://ftp.riken.jp/Linux/ubuntu/|g' /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null || true \
  && sed -i 's|http://security.ubuntu.com/ubuntu|http://ftp.riken.jp/Linux/ubuntu/|g' /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null || true
@@ -43,15 +49,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 RUN if [ "${DEVICE}" = "gpu" ]; then \
-    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu$(echo ${ROS_DISTRO} | sed 's/lyrical/2604/;s/jazzy/2404/;s/humble/2204/')/x86_64/cuda-keyring_1.1-1_all.deb \
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu${UBUNTU_VER}/x86_64/cuda-keyring_1.1-1_all.deb \
     && dpkg -i cuda-keyring_1.1-1_all.deb \
     && apt-get update && apt-get install -y --no-install-recommends \
        cuda-toolkit-$(echo ${CUDA_VER} | cut -d. -f1-2 | sed 's/\./-/') \
     && rm cuda-keyring_1.1-1_all.deb && rm -rf /var/lib/apt/lists/*; \
     fi
-
-ENV PATH=/usr/local/cuda/bin:${PATH} \
-    LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}
 
 RUN install -m 0755 -d /etc/apt/keyrings \
  && curl -fsSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
@@ -59,9 +62,8 @@ RUN install -m 0755 -d /etc/apt/keyrings \
  && chmod a+r /etc/apt/keyrings/ros-archive-keyring.gpg \
  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/ros-archive-keyring.gpg] \
     http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" \
-    | tee /etc/apt/sources.list.d/ros2.list > /dev/null
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
+    | tee /etc/apt/sources.list.d/ros2.list > /dev/null \
+ && apt-get update && apt-get install -y --no-install-recommends \
     ros-${ROS_DISTRO}-desktop ros-dev-tools \
     && rm -rf /var/lib/apt/lists/*
 

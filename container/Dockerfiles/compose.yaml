@@ -4,6 +4,7 @@ x-base: &base_config
   build:
     context: .
     args:
+      UBUNTU_VER:    ${UBUNTU_VER}
       ROS_DISTRO:    ${ROS_DISTRO}
       ROS_DOMAIN_ID: ${ROS_DOMAIN_ID}
       USER_NAME:     ${USER_NAME}
