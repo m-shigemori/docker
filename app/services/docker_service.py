@@ -1,5 +1,4 @@
 import subprocess
-from typing import List, Optional
 from dataclasses import dataclass
 
 @dataclass
@@ -10,45 +9,69 @@ class Container:
     state: str
     image: str
 
+@dataclass
+class ImageInfo:
+    id: str
+    repository: str
+    tag: str
+    size: str
+
 class DockerService:
-    def _run_docker_command(self, args: List[str], check: bool = True, capture: bool = False) -> Optional[subprocess.CompletedProcess]:
+    def _run_docker_command(self, args, check=True, capture=False):
         try:
-            return subprocess.run(
-                ["docker"] + args,
-                capture_output=capture,
-                text=True,
-                check=check
-            )
+            if capture:
+                return subprocess.run(
+                    ["docker"] + args,
+                    capture_output=True,
+                    text=True,
+                    check=check
+                )
+            else:
+                return subprocess.run(
+                    ["docker"] + args,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                    check=check
+                )
         except subprocess.CalledProcessError:
             return None
 
-    def list_containers(self) -> List[Container]:
+    def list_containers(self):
         args = ["ps", "-a", "--format", "{{.ID}}::{{.Names}}::{{.Status}}::{{.State}}::{{.Image}}"]
         result = self._run_docker_command(args, capture=True)
-
         if not result or not result.stdout:
             return []
-
         containers = []
         for line in result.stdout.strip().split('\n'):
             parts = line.split('::')
             if len(parts) == 5:
                 containers.append(Container(*parts))
-                
         return containers
 
-    def start_container(self, container_id: str) -> None:
+    def list_images(self):
+        args = ["images", "--format", "{{.ID}}::{{.Repository}}::{{.Tag}}::{{.Size}}"]
+        result = self._run_docker_command(args, capture=True)
+        if not result or not result.stdout:
+            return []
+        images = []
+        for line in result.stdout.strip().split('\n'):
+            parts = line.split('::')
+            if len(parts) == 4:
+                images.append(ImageInfo(*parts))
+        return images
+
+    def start_container(self, container_id):
         self._run_docker_command(["start", container_id])
 
-    def stop_container(self, container_id: str) -> None:
+    def stop_container(self, container_id):
         self._run_docker_command(["stop", "--timeout=1", container_id])
 
-    def open_container_shell(self, container_id: str) -> None:
-        cmd = f"gnome-terminal -- bash -c 'docker exec -it {container_id} /bin/bash; bash'"
-        subprocess.Popen(cmd, shell=True)
+    def open_container_shell(self, container_id):
+        cmd = f"x-terminal-emulator -e bash -c 'docker exec -it {container_id} bash; exec bash'"
+        subprocess.Popen(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    def remove_container(self, container_id: str) -> None:
+    def remove_container(self, container_id):
         self._run_docker_command(["rm", "-f", container_id])
 
-    def remove_image(self, image_name: str) -> None:
-        self._run_docker_command(["rmi", image_name])
+    def remove_image(self, image_id):
+        self._run_docker_command(["rmi", "-f", image_id])

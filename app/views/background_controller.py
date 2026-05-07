@@ -33,7 +33,7 @@ class BackgroundController:
         self.is_animating = True
         
         self.fade_anim = QPropertyAnimation(self.bg_effect, b"opacity")
-        self.fade_anim.setDuration(500)
+        self.fade_anim.setDuration(250)
         self.fade_anim.setStartValue(1.0)
         self.fade_anim.setEndValue(0.0)
         self.fade_anim.finished.connect(lambda: self._swap(update_callback))
@@ -51,7 +51,7 @@ class BackgroundController:
         update_callback()
         
         self.fade_anim = QPropertyAnimation(self.bg_effect, b"opacity")
-        self.fade_anim.setDuration(500)
+        self.fade_anim.setDuration(250)
         self.fade_anim.setStartValue(0.0)
         self.fade_anim.setEndValue(1.0)
         self.fade_anim.finished.connect(lambda: setattr(self, "is_animating", False))

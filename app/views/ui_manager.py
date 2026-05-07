@@ -4,31 +4,38 @@ from PyQt6.QtCore import QSize
 from app.views.background_controller import BackgroundController
 from app.views.control_panel import ControlPanelManager
 from app.views.list_manager import ContainerListManager
+from app.services.docker_service import DockerService
 
 class UIManager:
     def __init__(self, master):
         self.master = master
+        self.docker = DockerService()
         
         self.bg = BackgroundController(self.master)
         self.panel = ControlPanelManager(self.master)
         self.list = ContainerListManager(self.panel.main_layout)
         
         self.is_delete_mode = False
+        self.view_mode = "containers"
         self.last_w, self.last_h = 0, 0
-        
-        self.dummy_data = [
-            {"name": "web-server", "state": "running"},
-            {"name": "db-master", "state": "exited"},
-            {"name": "cache-node", "state": "running"}
-        ]
         
         self._setup_connections()
         self.refresh_list()
 
     def _setup_connections(self):
-        self.panel.btn_refresh.clicked.connect(lambda: self.bg.refresh(lambda: self.update(self.last_w, self.last_h)))
+        self.panel.btn_refresh.clicked.connect(self._on_refresh_clicked)
+        self.panel.btn_view_mode.clicked.connect(self._toggle_view)
         self.panel.btn_toggle.clicked.connect(self.toggle_mode)
         self.panel.btn_close.clicked.connect(self.master.window().close)
+
+    def _on_refresh_clicked(self):
+        self.bg.refresh(lambda: self.update(self.last_w, self.last_h))
+        self.refresh_list()
+
+    def _toggle_view(self):
+        self.view_mode = "images" if self.view_mode == "containers" else "containers"
+        self.panel.update_view_icon(self.view_mode)
+        self.refresh_list()
 
     def toggle_mode(self):
         self.is_delete_mode = not self.is_delete_mode
@@ -37,9 +44,39 @@ class UIManager:
 
     def refresh_list(self):
         self.list.clear_list()
-        for data in self.dummy_data:
-            self.list.create_container_row(data["name"], data["state"], self.is_delete_mode)
+        
+        if self.view_mode == "containers":
+            items = self.docker.list_containers()
+            for c in items:
+                row = self.list.create_row(c.id, c.name, c.state, self.is_delete_mode)
+                row.action_triggered.connect(self._handle_action)
+                row.style_request.connect(self.list.refresh_row_style)
+        else:
+            items = self.docker.list_images()
+            for img in items:
+                name = f"{img.repository}:{img.tag}"
+                row = self.list.create_row(img.id, name, img.size, self.is_delete_mode, is_image=True)
+                row.action_triggered.connect(self._handle_action)
+                row.style_request.connect(self.list.refresh_row_style)
+                
         self.update(self.last_w, self.last_h)
+
+    def _handle_action(self, action, item_id):
+        if action == "start":
+            self.docker.start_container(item_id)
+            self.bg.refresh(lambda: self.update(self.last_w, self.last_h))
+            self.refresh_list()
+        elif action == "stop":
+            self.docker.stop_container(item_id)
+            self.refresh_list()
+        elif action == "exec":
+            self.docker.open_container_shell(item_id)
+        elif action == "delete":
+            if self.view_mode == "containers":
+                self.docker.remove_container(item_id)
+            else:
+                self.docker.remove_image(item_id)
+            self.refresh_list()
 
     def update(self, w, h):
         if w <= 0 or h <= 0: return

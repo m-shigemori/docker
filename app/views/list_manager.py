@@ -1,19 +1,27 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QScrollArea, QGraphicsColorizeEffect
 from PyQt6.QtGui import QColor, QIcon
-from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtCore import Qt, QSize, pyqtSignal
 from app.views.components import create_custom_button
 
 class ContainerRow(QWidget):
-    def __init__(self, name, state, is_delete_mode):
+    action_triggered = pyqtSignal(str, str)
+    style_request = pyqtSignal(object)
+
+    def __init__(self, item_id, name, state, is_delete_mode, is_image=False):
         super().__init__()
+        self.item_id = item_id
         self.name = name
         self.state = state
         self.is_delete_mode = is_delete_mode
+        self.is_image = is_image
         self.buttons = []
         
         self._setup_ui()
 
     def _setup_ui(self):
+        if self.layout():
+            QWidget().setLayout(self.layout())
+            
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         
@@ -29,7 +37,10 @@ class ContainerRow(QWidget):
         self.state_text = QLabel(self.state.upper())
         self.state_text.setFixedWidth(75)
         
-        if self.state == "running":
+        if self.is_image:
+            self.icon_path = "assets/icons/operation.svg"
+            self.base_color = "#4a3a35"
+        elif self.state == "running":
             self.icon_path = "assets/icons/boot.svg"
             self.base_color = "#258c6d"
         else:
@@ -61,27 +72,12 @@ class ContainerRow(QWidget):
         self.btn_slot1 = QWidget()
         self.btn_slot2 = QWidget()
         
-        slot1_layout = QVBoxLayout(self.btn_slot1)
-        slot1_layout.setContentsMargins(0, 0, 0, 0)
-        slot2_layout = QVBoxLayout(self.btn_slot2)
-        slot2_layout.setContentsMargins(0, 0, 0, 0)
+        self.slot1_layout = QVBoxLayout(self.btn_slot1)
+        self.slot1_layout.setContentsMargins(0, 0, 0, 0)
+        self.slot2_layout = QVBoxLayout(self.btn_slot2)
+        self.slot2_layout.setContentsMargins(0, 0, 0, 0)
         
-        if self.is_delete_mode:
-            btn = create_custom_button("Delete", "assets/icons/note.svg")
-            btn.setProperty("special_color", "red")
-            slot2_layout.addWidget(btn)
-            self.buttons.append(btn)
-        elif self.state == "running":
-            btn_exec = create_custom_button("Exec", "assets/icons/exec.svg")
-            btn_stop = create_custom_button("Stop", "assets/icons/stop.svg")
-            btn_stop.setProperty("special_color", "red")
-            slot1_layout.addWidget(btn_exec)
-            slot2_layout.addWidget(btn_stop)
-            self.buttons.extend([btn_exec, btn_stop])
-        else:
-            btn_start = create_custom_button("Start", "assets/icons/start.svg")
-            slot2_layout.addWidget(btn_start)
-            self.buttons.append(btn_start)
+        self._build_buttons()
             
         action_layout.addWidget(self.btn_slot1)
         action_layout.addWidget(self.btn_slot2)
@@ -91,6 +87,37 @@ class ContainerRow(QWidget):
         row_layout.addLayout(action_layout, 4)
         
         layout.addWidget(self.frame)
+
+    def _build_buttons(self):
+        for btn in self.buttons:
+            btn.deleteLater()
+        self.buttons = []
+
+        if self.is_delete_mode:
+            btn = create_custom_button("Delete", "assets/icons/note.svg")
+            btn.setProperty("special_color", "red")
+            btn.clicked.connect(lambda: self.action_triggered.emit("delete", self.item_id))
+            self.slot2_layout.addWidget(btn)
+            self.buttons.append(btn)
+        elif self.is_image:
+            pass
+        elif self.state == "running":
+            btn_exec = create_custom_button("Exec", "assets/icons/exec.svg")
+            btn_exec.clicked.connect(lambda: self.action_triggered.emit("exec", self.item_id))
+            
+            btn_stop = create_custom_button("Stop", "assets/icons/stop.svg")
+            btn_stop.setProperty("special_color", "red")
+            btn_stop.clicked.connect(lambda: self.action_triggered.emit("stop", self.item_id))
+            
+            self.slot1_layout.addWidget(btn_exec)
+            self.slot2_layout.addWidget(btn_stop)
+            self.buttons.extend([btn_exec, btn_stop])
+        else:
+            btn_start = create_custom_button("Start", "assets/icons/start.svg")
+            btn_start.clicked.connect(lambda: self.action_triggered.emit("start", self.item_id))
+            
+            self.slot2_layout.addWidget(btn_start)
+            self.buttons.append(btn_start)
 
     def update_styles(self, fs, icon_s, btn_h, btn_w, btn_style, hover_style):
         self.state_text.setStyleSheet(f"color: {self.base_color}; font-weight: bold; font-size: {int(fs * 0.8)}px; background: transparent;")
@@ -155,14 +182,20 @@ class ContainerListManager:
                 item.widget().deleteLater()
         self.container_rows = []
 
-    def create_container_row(self, name, state, is_delete_mode):
-        row = ContainerRow(name, state, is_delete_mode)
+    def create_row(self, item_id, name, state, is_delete_mode, is_image=False):
+        row = ContainerRow(item_id, name, state, is_delete_mode, is_image)
         self.scroll_layout.insertWidget(self.scroll_layout.count() - 1, row)
         self.container_rows.append(row)
+        return row
 
     def update_styles(self, fs, icon_s, btn_h, btn_style, hover_style, header_style, btn_w):
+        self.fs, self.icon_s, self.btn_h, self.btn_style, self.hover_style, self.header_style, self.btn_w = fs, icon_s, btn_h, btn_style, hover_style, header_style, btn_w
+        
         for label in [self.label_state, self.label_name, self.label_action]:
             label.setStyleSheet(header_style)
             
         for row in self.container_rows:
             row.update_styles(fs, icon_s, btn_h, btn_w, btn_style, hover_style)
+
+    def refresh_row_style(self, row):
+        row.update_styles(self.fs, self.icon_s, self.btn_h, self.btn_w, self.btn_style, self.hover_style)

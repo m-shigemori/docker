@@ -21,10 +21,14 @@ class ControlPanelManager:
         
         self.btn_refresh = create_custom_button("Refresh", "assets/icons/reflesh.svg")
         self.btn_toggle = create_custom_button("Operation", "assets/icons/operation.svg")
+        self.btn_view_mode = create_custom_button("", "assets/icons/image.svg")
         self.btn_close = create_custom_button("Close", "assets/icons/close.svg")
+        
+        self.btn_view_mode.hide()
         
         self.row_layout.addWidget(self.btn_refresh)
         self.row_layout.addWidget(self.btn_toggle)
+        self.row_layout.addWidget(self.btn_view_mode)
         self.row_layout.addStretch()
         self.row_layout.addWidget(self.btn_close)
         
@@ -47,11 +51,23 @@ class ControlPanelManager:
         if is_delete_mode:
             self.btn_toggle.set_text("Delete")
             self.btn_toggle.icon_label.setProperty("path", "assets/icons/bin.svg")
+            self.btn_view_mode.show()
         else:
             self.btn_toggle.set_text("Operation")
             self.btn_toggle.icon_label.setProperty("path", "assets/icons/operation.svg")
+            self.btn_view_mode.hide()
+
+    def update_view_icon(self, view_mode):
+        icon_path = "assets/icons/container.svg" if view_mode == "images" else "assets/icons/image.svg"
+        self.btn_view_mode.icon_label.setProperty("path", icon_path)
 
     def update_styles(self, btn_w, btn_h, icon_s, btn_style, normal_style, hover_style):
-        for btn in [self.btn_refresh, self.btn_toggle, self.btn_close]:
+        main_btns = [self.btn_refresh, self.btn_toggle, self.btn_close]
+        
+        for btn in main_btns:
             btn.update_appearance(btn_w, btn_h, icon_s, btn_style)
             btn.set_labels(normal_style, hover_style)
+            
+        self.btn_view_mode.update_appearance(btn_h, btn_h, icon_s, btn_style)
+        self.btn_view_mode.set_labels(normal_style, hover_style)
+        self.btn_view_mode.text_label.hide()
