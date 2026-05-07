@@ -4,21 +4,32 @@ x-base: &base_config
   build:
     context: .
     args:
-      ROS_DISTRO: ${ROS_DISTRO}
-      USER_NAME: ${USER_NAME}
-      USER_ID: ${USER_ID}
-      GROUP_ID: ${GROUP_ID}
+      ROS_DISTRO:    ${ROS_DISTRO}
+      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID}
+      USER_NAME:     ${USER_NAME}
+      USER_ID:       ${USER_ID}
+      GROUP_ID:      ${GROUP_ID}
 
+  user: "${USER_ID}:${GROUP_ID}"
+  network_mode: host
+  privileged: true
   stdin_open: true
   tty: true
 
-  volumes:
-    - /tmp/.X11-unix:/tmp/.X11-unix
-    - ../src:/home/${USER_NAME}/colcon_ws/src
-
   environment:
-    CONTAINER_NAME: ${NAME}
-    DISPLAY: ${DISPLAY}
+    CONTAINER_NAME:  ${NAME}
+    DISPLAY:         ${DISPLAY}
+    WAYLAND_DISPLAY: ${WAYLAND_DISPLAY}
+    XDG_RUNTIME_DIR: /run/user/${USER_ID}
+    PULSE_SERVER:    unix:/run/user/${USER_ID}/pulse/native
+    ROS_DOMAIN_ID:   ${ROS_DOMAIN_ID}
+
+  volumes:
+    - /dev:/dev
+    - /tmp/.X11-unix:/tmp/.X11-unix
+    - /run/user/${USER_ID}/${WAYLAND_DISPLAY}:/run/user/${USER_ID}/${WAYLAND_DISPLAY}
+    - /run/user/${USER_ID}/pulse:/run/user/${USER_ID}/pulse
+    - ../src:/home/${USER_NAME}/colcon_ws/src
 
 services:
   cpu:

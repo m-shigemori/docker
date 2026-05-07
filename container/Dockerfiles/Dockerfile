@@ -27,31 +27,44 @@ RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|http://ftp.riken.jp/Linux/ubuntu
  && sed -i 's|http://security.ubuntu.com/ubuntu|http://ftp.riken.jp/Linux/ubuntu/|g' /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null || true
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    sudo
-#     wget curl \
-#     git gh \
-#     nano gedit \
-#     tree usbutils \
-#     bash-completion \
-#     wl-clipboard \
-#     python3-pip \
-#     iproute2 iputils-ping \
-#     build-essential \
-#     && rm -rf /var/lib/apt/lists/*
+    sudo \
+    wget curl \
+    ca-certificates gnupg2 \
+    git gh python3-pip build-essential \
+    nano gedit tree bash-completion \
+    wl-clipboard \
+    usbutils \
+    iproute2 iputils-ping \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN install -m 0755 -d /etc/apt/keyrings \
+ && curl -fsSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
+    | gpg --dearmor -o /etc/apt/keyrings/ros-archive-keyring.gpg \
+ && chmod a+r /etc/apt/keyrings/ros-archive-keyring.gpg \
+ && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/ros-archive-keyring.gpg] \
+    http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" \
+    | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-${ROS_DISTRO}-desktop ros-dev-tools \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN if getent passwd ${USER_ID} > /dev/null; then userdel -r $(getent passwd ${USER_ID} | cut -d: -f1); fi \
  && if getent group ${GROUP_ID} > /dev/null; then groupdel $(getent group ${GROUP_ID} | cut -d: -f1); fi \
  && groupadd -g ${GROUP_ID} ${USER_NAME} \
  && useradd -m -u ${USER_ID} -g ${GROUP_ID} -s /bin/bash ${USER_NAME} \
  && echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USER_NAME} \
- && chmod 0440 /etc/sudoers.d/${USER_NAME}
+ && chmod 0440 /etc/sudoers.d/${USER_NAME} \
+ && mkdir -p ${HOME}/colcon_ws/src ${HOME}/.ros/log \
+ && chown -R ${USER_ID}:${GROUP_ID} ${HOME}
 
 COPY scripts/ /tmp/scripts/
-
 RUN cat /tmp/scripts/.bash_aliases >> ${HOME}/.bash_aliases \
  && cat /tmp/scripts/.bashrc_custom >> ${HOME}/.bashrc \
  && chown ${USER_NAME}:${GROUP_ID} ${HOME}/.bash_aliases ${HOME}/.bashrc \
  && rm -rf /tmp/scripts
+
+RUN rosdep init && rosdep update
 
 USER ${USER_NAME}
 WORKDIR ${HOME}/colcon_ws

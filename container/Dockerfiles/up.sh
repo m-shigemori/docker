@@ -14,4 +14,4 @@ export IMAGE_NAME="${USER_NAME}/${NAME}"
 export USER_ID=$(id -u)
 export GROUP_ID=$(id -g)
 
-docker compose --profile "${DEVICE}" up -d --build
+docker compose -p "${NAME}" --profile "${DEVICE}" up -d --build --remove-orphans
