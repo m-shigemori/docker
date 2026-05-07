@@ -14,6 +14,7 @@ class ControlPanelManager:
         
         self.button_row = QWidget()
         self.button_row.setContentsMargins(15, 0, 15, 0)
+        
         self.row_layout = QHBoxLayout(self.button_row)
         self.row_layout.setContentsMargins(5, 5, 5, 10)
         self.row_layout.setSpacing(10)
@@ -49,7 +50,8 @@ class ControlPanelManager:
         else:
             self.btn_toggle.set_text("Operation")
             self.btn_toggle.icon_label.setProperty("path", "assets/icons/operation.svg")
-            
-        icon_s = self.btn_toggle.icon_label.width()
-        icon_pix = QIcon(self.btn_toggle.icon_label.property("path")).pixmap(QSize(icon_s, icon_s))
-        self.btn_toggle.icon_label.setPixmap(icon_pix)
+
+    def update_styles(self, btn_w, btn_h, icon_s, btn_style, normal_style, hover_style):
+        for btn in [self.btn_refresh, self.btn_toggle, self.btn_close]:
+            btn.update_appearance(btn_w, btn_h, icon_s, btn_style)
+            btn.set_labels(normal_style, hover_style)
