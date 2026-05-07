@@ -33,31 +33,40 @@ class DockerService:
                     stderr=subprocess.DEVNULL,
                     check=check
                 )
+
         except subprocess.CalledProcessError:
             return None
 
     def list_containers(self):
         args = ["ps", "-a", "--format", "{{.ID}}::{{.Names}}::{{.Status}}::{{.State}}::{{.Image}}"]
         result = self._run_docker_command(args, capture=True)
+
         if not result or not result.stdout:
             return []
+
         containers = []
+
         for line in result.stdout.strip().split('\n'):
             parts = line.split('::')
             if len(parts) == 5:
                 containers.append(Container(*parts))
+
         return containers
 
     def list_images(self):
         args = ["images", "--format", "{{.ID}}::{{.Repository}}::{{.Tag}}::{{.Size}}"]
         result = self._run_docker_command(args, capture=True)
+
         if not result or not result.stdout:
             return []
+
         images = []
+
         for line in result.stdout.strip().split('\n'):
             parts = line.split('::')
             if len(parts) == 4:
                 images.append(ImageInfo(*parts))
+
         return images
 
     def start_container(self, container_id):

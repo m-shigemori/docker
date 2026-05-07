@@ -51,6 +51,7 @@ class UIManager:
                 row = self.list.create_row(c.id, c.name, c.state, self.is_delete_mode)
                 row.action_triggered.connect(self._handle_action)
                 row.style_request.connect(self.list.refresh_row_style)
+
         else:
             items = self.docker.list_images()
             for img in items:
@@ -66,11 +67,14 @@ class UIManager:
             self.docker.start_container(item_id)
             self.bg.refresh(lambda: self.update(self.last_w, self.last_h))
             self.refresh_list()
+
         elif action == "stop":
             self.docker.stop_container(item_id)
             self.refresh_list()
+
         elif action == "exec":
             self.docker.open_container_shell(item_id)
+
         elif action == "delete":
             if self.view_mode == "containers":
                 self.docker.remove_container(item_id)
@@ -79,7 +83,9 @@ class UIManager:
             self.refresh_list()
 
     def update(self, w, h):
-        if w <= 0 or h <= 0: return
+        if w <= 0 or h <= 0:
+            return
+
         self.last_w, self.last_h = w, h
         
         fg_w, bg_img = self.bg.update_geometry(w, h)

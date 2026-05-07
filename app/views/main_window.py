@@ -18,4 +18,3 @@ class MainWindow(QMainWindow):
     def resizeEvent(self, event):
         self.ui.update(self.central_widget.width(), self.central_widget.height())
         super().resizeEvent(event)
-

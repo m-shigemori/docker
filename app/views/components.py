@@ -5,6 +5,7 @@ from PyQt6.QtCore import Qt, QSize
 class HoverButton(QPushButton):
     def __init__(self, text, icon_path, parent=None):
         super().__init__(parent)
+
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         
         self.icon_label = QLabel()
@@ -44,17 +45,20 @@ class HoverButton(QPushButton):
     def _apply_current_style(self):
         is_hover = self.underMouse()
         self.icon_effect.setEnabled(is_hover)
+        
         if self.text_label:
             self.text_label.setStyleSheet(self.hover_style if is_hover else self.normal_style)
 
     def enterEvent(self, event):
         super().enterEvent(event)
+
         self.icon_effect.setEnabled(True)
         if self.text_label:
             self.text_label.setStyleSheet(self.hover_style)
 
     def leaveEvent(self, event):
         super().leaveEvent(event)
+
         self.icon_effect.setEnabled(False)
         if self.text_label:
             self.text_label.setStyleSheet(self.normal_style)
