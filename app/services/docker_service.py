@@ -25,7 +25,7 @@ class DockerService:
     def list_containers(self) -> List[Container]:
         args = ["ps", "-a", "--format", "{{.ID}}::{{.Names}}::{{.Status}}::{{.State}}::{{.Image}}"]
         result = self._run_docker_command(args, capture=True)
-        
+
         if not result or not result.stdout:
             return []
 
@@ -34,6 +34,7 @@ class DockerService:
             parts = line.split('::')
             if len(parts) == 5:
                 containers.append(Container(*parts))
+                
         return containers
 
     def start_container(self, container_id: str) -> None:

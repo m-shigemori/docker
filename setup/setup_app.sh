@@ -43,6 +43,7 @@ function dock()
   fi
 }
 
+export PYTHONDONTWRITEBYTECODE=1
 alias ce='python3 $PROJECT_DIR/main.py'
 EOF
 fi
