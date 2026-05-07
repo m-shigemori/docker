@@ -1,6 +1,14 @@
 import subprocess
 from typing import List, Optional
-from app.models.container import Container
+from dataclasses import dataclass
+
+@dataclass
+class Container:
+    id: str
+    name: str
+    status: str
+    state: str
+    image: str
 
 class DockerService:
     def _run_docker_command(self, args: List[str], check: bool = True, capture: bool = False) -> Optional[subprocess.CompletedProcess]:
