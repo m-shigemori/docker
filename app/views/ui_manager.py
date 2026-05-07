@@ -39,6 +39,9 @@ class UIManager:
 
     def toggle_mode(self):
         self.is_delete_mode = not self.is_delete_mode
+        if not self.is_delete_mode:
+            self.view_mode = "containers"
+            self.panel.update_view_icon(self.view_mode)
         self.panel.toggle_mode(self.is_delete_mode)
         self.refresh_list()
 
