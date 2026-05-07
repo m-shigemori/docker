@@ -9,6 +9,8 @@ x-base: &base_config
       USER_NAME:     ${USER_NAME}
       USER_ID:       ${USER_ID}
       GROUP_ID:      ${GROUP_ID}
+      DEVICE:        ${DEVICE}
+      CUDA_VER:      ${CUDA_VER}
 
   user: "${USER_ID}:${GROUP_ID}"
   network_mode: host
@@ -41,3 +43,4 @@ services:
     <<: *base_config
     profiles: ["gpu"]
     image: ${IMAGE_NAME}:gpu
+    gpus: all
