@@ -1,4 +1,5 @@
 import subprocess
+import shutil
 from dataclasses import dataclass
 
 @dataclass
@@ -76,8 +77,20 @@ class DockerService:
         self._run_docker_command(["stop", "--timeout=1", container_id])
 
     def open_container_shell(self, container_id):
-        cmd = f"x-terminal-emulator -e bash -c 'docker exec -it {container_id} bash; exec bash'"
-        subprocess.Popen(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        exec_cmd = f"docker exec -it {container_id} bash; exec bash"
+
+        if shutil.which("ptyxis"):
+            cmd = ["ptyxis", "--new-window", "--", "bash", "-c", exec_cmd]
+        elif shutil.which("gnome-terminal"):
+            cmd = ["gnome-terminal", "--", "bash", "-c", exec_cmd]
+        elif shutil.which("konsole"):
+            cmd = ["konsole", "-e", "bash", "-c", exec_cmd]
+        elif shutil.which("xfce4-terminal"):
+            cmd = ["xfce4-terminal", "-e", f"bash -c '{exec_cmd}'"]
+        else:
+            cmd = ["x-terminal-emulator", "-e", f"bash -c '{exec_cmd}'"]
+
+        subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     def remove_container(self, container_id):
         self._run_docker_command(["rm", "-f", container_id])
