@@ -51,8 +51,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN if [ "${DEVICE}" = "gpu" ]; then \
     wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu${UBUNTU_VER}/x86_64/cuda-keyring_1.1-1_all.deb \
     && dpkg -i cuda-keyring_1.1-1_all.deb \
-    && apt-get update && apt-get install -y --no-install-recommends \
-       cuda-toolkit-$(echo ${CUDA_VER} | cut -d. -f1-2 | sed 's/\./-/') \
+    && CUDA_TAG="$(printf '%s' "$CUDA_VER" | cut -d. -f1-2 | tr '.' '-')" \
+    && apt-get update && apt-get install -y --no-install-recommends cuda-toolkit-${CUDA_TAG} \
     && rm cuda-keyring_1.1-1_all.deb && rm -rf /var/lib/apt/lists/*; \
     fi
 
