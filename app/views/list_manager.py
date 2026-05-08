@@ -38,7 +38,7 @@ class ContainerRow(QWidget):
 
         self.state_icon = QLabel()
         self.state_text = QLabel(self.state.upper())
-        self.state_text.setFixedWidth(75)
+        self.state_text.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
         if self.is_image:
             self.icon_path = os.path.join(ICONS_DIR, "operation.svg")
@@ -60,7 +60,8 @@ class ContainerRow(QWidget):
         state_layout.setContentsMargins(0, 0, 0, 0)
         state_layout.setSpacing(8)
         state_layout.addStretch()
-        state_layout.addWidget(self.state_icon)
+        if not (self.is_image and self.is_delete_mode):
+            state_layout.addWidget(self.state_icon)
         state_layout.addWidget(self.state_text)
         state_layout.addStretch()
         
