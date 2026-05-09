@@ -8,23 +8,15 @@
 
 [JA](README.md) | [EN](README.en.md)
 
-An intuitive GUI tool for Docker container management, specifically designed for use with ROS 2 Humble and Jazzy.
-Built with PyQt5, it streamlines starting, stopping, and attaching to containers, while also providing a simplified way to perform bulk deletions of containers and their base images.
-
-## Key Features
-
-- **Container Management**: View running containers and easily perform Start/Stop operations.
-- **Shell Access**: Open a container shell in a new terminal with a single click.
-- **Bulk Deletion**: Use "Edit Mode" to delete containers and their base images simultaneously.
-- **Visuals**: Modern GUI with random background images.
-- **CLI Integration**: Includes `ce` (Launch GUI) and `dock` (Quick attach via fzf) commands.
+An intuitive PyQt6-based GUI tool for Docker container management.
 
 ## UI Modes
 
-| Standard Mode | Edit Mode |
-| :---: | :---: |
-| <img src="docs/standard_mode.png" width="400"> | <img src="docs/edit_mode.png" width="400"> |
-| Daily operations such as starting, stopping, and accessing the shell. | Environment cleanup and management. |
+### Operation Mode
+<img src="docs/operation.png" width="800">
+
+### Delete Mode (Container / Image)
+<img src="docs/del_container.png" width="400"> <img src="docs/del_image.png" width="400">
 
 ## Installation
 
@@ -46,7 +38,6 @@ ce
 ```
 
 ### Quick Attach via CLI
-Use the provided helper function to quickly select and enter a running container via `fzf`.
 ```bash
 dock
 ```
