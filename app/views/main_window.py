@@ -8,7 +8,7 @@ class MainWindow(QMainWindow):
 
         self.setMinimumSize(QSize(960, 540))
         self.resize(960, 540)
-        self.setWindowTitle("")
+        self.setWindowTitle(" ")
 
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
