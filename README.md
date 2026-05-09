@@ -13,7 +13,7 @@ Dockerコンテナの管理を直感的に行うためのPyQt6ベースのGUIツ
 ## UI モード
 
 ### 操作モード
-<img src="docs/operation.png" width="800">
+<img src="docs/operation.png" width="400">
 
 ### 削除モード（コンテナ・イメージ）
 <img src="docs/del_container.png" width="400"> <img src="docs/del_image.png" width="400">

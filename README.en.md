@@ -13,7 +13,7 @@ An intuitive PyQt6-based GUI tool for Docker container management.
 ## UI Modes
 
 ### Operation Mode
-<img src="docs/operation.png" width="800">
+<img src="docs/operation.png" width="400">
 
 ### Delete Mode (Container / Image)
 <img src="docs/del_container.png" width="400"> <img src="docs/del_image.png" width="400">
