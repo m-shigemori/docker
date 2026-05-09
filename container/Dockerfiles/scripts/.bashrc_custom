@@ -1,9 +1,9 @@
 
 export EDITOR=nano
-export ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
 
 source /opt/ros/${ROS_DISTRO}/setup.bash
 source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
 if [ -f ${HOME}/colcon_ws/install/setup.bash ]; then
     source ${HOME}/colcon_ws/install/setup.bash
 fi
+

@@ -5,13 +5,13 @@ x-base: &base_config
     context: .
     args:
       UBUNTU_VER:    ${UBUNTU_VER}
-      ROS_DISTRO:    ${ROS_DISTRO}
-      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID}
+      CUDA_VER:      ${CUDA_VER}
+      DEVICE:        ${DEVICE}
       USER_NAME:     ${USER_NAME}
       USER_ID:       ${USER_ID}
       GROUP_ID:      ${GROUP_ID}
-      DEVICE:        ${DEVICE}
-      CUDA_VER:      ${CUDA_VER}
+      ROS_DISTRO:    ${ROS_DISTRO}
+      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID}
 
   user: "${USER_ID}:${GROUP_ID}"
   network_mode: host
@@ -25,7 +25,6 @@ x-base: &base_config
     WAYLAND_DISPLAY: ${WAYLAND_DISPLAY}
     XDG_RUNTIME_DIR: /run/user/${USER_ID}
     PULSE_SERVER:    unix:/run/user/${USER_ID}/pulse/native
-    ROS_DOMAIN_ID:   ${ROS_DOMAIN_ID}
 
   volumes:
     - /dev:/dev

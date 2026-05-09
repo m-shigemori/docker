@@ -7,23 +7,23 @@ FROM ubuntu:22.04 AS base_humble
 FROM base_${ROS_DISTRO}
 
 ARG UBUNTU_VER
-ARG ROS_DISTRO
-ARG ROS_DOMAIN_ID
+ARG CUDA_VER
+ARG DEVICE
 
 ARG USER_NAME
 ARG USER_ID
 ARG GROUP_ID
 
-ARG DEVICE=cpu
-ARG CUDA_VER=12.8.1
+ARG ROS_DISTRO
+ARG ROS_DOMAIN_ID
 
-ENV UBUNTU_VER=${UBUNTU_VER} \
-    ROS_DISTRO=${ROS_DISTRO} \
-    ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
+ENV UBUNTU_VER=${UBUNTU_VER}
 
 ENV USER_NAME=${USER_NAME} \
     HOME=/home/${USER_NAME} \
     PYTHONDONTWRITEBYTECODE=1
+
+ENV ROS_DISTRO=${ROS_DISTRO}
 
 ENV LC_ALL=C.UTF-8 \
     LANG=C.UTF-8 \
@@ -51,7 +51,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN if [ "${DEVICE}" = "gpu" ]; then \
     wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu${UBUNTU_VER}/x86_64/cuda-keyring_1.1-1_all.deb \
     && dpkg -i cuda-keyring_1.1-1_all.deb \
-    && CUDA_TAG="$(printf '%s' "$CUDA_VER" | cut -d. -f1-2 | tr '.' '-')" \
+    && CUDA_TAG="$(echo "$CUDA_VER" | cut -d. -f1-2 | tr '.' '-')" \
     && apt-get update && apt-get install -y --no-install-recommends cuda-toolkit-${CUDA_TAG} \
     && rm cuda-keyring_1.1-1_all.deb && rm -rf /var/lib/apt/lists/*; \
     fi
@@ -79,6 +79,7 @@ RUN if getent passwd ${USER_ID} > /dev/null; then userdel -r $(getent passwd ${U
 COPY scripts/ /tmp/scripts/
 RUN cat /tmp/scripts/.bash_aliases >> ${HOME}/.bash_aliases \
  && cat /tmp/scripts/.bashrc_custom >> ${HOME}/.bashrc \
+ && echo "export ROS_DOMAIN_ID=${ROS_DOMAIN_ID}" >> ${HOME}/.bashrc \
  && chown ${USER_NAME}:${GROUP_ID} ${HOME}/.bash_aliases ${HOME}/.bashrc \
  && rm -rf /tmp/scripts
 
