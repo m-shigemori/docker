@@ -83,6 +83,10 @@ RUN cat /tmp/scripts/.bash_aliases >> ${HOME}/.bash_aliases \
  && chown ${USER_NAME}:${GROUP_ID} ${HOME}/.bash_aliases ${HOME}/.bashrc \
  && rm -rf /tmp/scripts
 
+RUN mkdir -p ${HOME}/.config/pip \
+ && echo -e "[global]\nbreak-system-packages = true" > ${HOME}/.config/pip/pip.conf \
+ && chown -R ${USER_ID}:${GROUP_ID} ${HOME}/.config
+
 RUN rosdep init && rosdep update
 
 USER ${USER_NAME}
