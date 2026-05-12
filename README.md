@@ -8,7 +8,7 @@
 
 [JA](README.md) | [EN](README.en.md)
 
-Dockerコンテナの管理を直感的に行うためのPyQt6ベースのGUIツールです．
+Dockerコンテナの管理を直感的に行うためのGUIツール。
 
 ## UI モード
 
@@ -20,15 +20,15 @@ Dockerコンテナの管理を直感的に行うためのPyQt6ベースのGUIツ
 
 ## インストール
 
-リポジトリのルートで以下のコマンドを実行してください．
+リポジトリのルートで以下のコマンドを実行する。
 
 ```bash
 bash install.sh
 ```
 
-このスクリプトは，DockerやNVIDIA Container Toolkitのセットアップ，必要なライブラリのインストール，エイリアスの追加などを自動的に行います．
+このスクリプトは，DockerやNVIDIA Container Toolkitのセットアップ，必要なライブラリのインストール，エイリアスの追加などを自動で行う。
 
-※設定を反映させるため，インストール後に一度再ログインしてください．
+※設定反映のため，インストール後に一度再ログインが必要。
 
 ## 使用方法
 
@@ -44,18 +44,18 @@ dock
 
 ## Docker コンテナの構築
 
-`container/Dockerfiles` にあるスクリプトを使用して，プロジェクトごとに最適化された Docker コンテナを簡単に構築できます．
+`container/Dockerfiles` にあるスクリプトを使用し，プロジェクトごとに最適化された Docker コンテナを簡単に構築できる。
 
 ### 1. プロジェクト名の設定（ディレクトリのコピー）
-`container` ディレクトリを，プロジェクト名に合わせてコピーしてください．
-このディレクトリ名が，Docker イメージ名およびコンテナ名（プロジェクト名）として使用されます．
+`container` ディレクトリを，プロジェクト名に合わせてコピーする。
+このディレクトリ名が，Docker イメージ名およびコンテナ名（プロジェクト名）として使用される。
 
 ```bash
 cp -r container/ <project_name>/
 ```
 
 ### 2. 環境設定（.env）
-`<project_name>/Dockerfiles/.env` を編集して，ROS のディストリビューションや GPU の使用有無などを設定します．
+`<project_name>/Dockerfiles/.env` を編集して，ROS のディストリビューションや GPU の使用有無などを設定する。
 
 ```bash
 # 例: .env
@@ -64,7 +64,7 @@ USE_GPU=true
 ```
 
 ### 3. コンテナの起動
-以下のスクリプトを実行して，コンテナをビルド・起動します．
+以下のスクリプトを実行して，コンテナをビルド・起動する。
 
 ```bash
 bash <project_name>/Dockerfiles/up.sh
@@ -82,7 +82,7 @@ bash <project_name>/Dockerfiles/up.sh
 
 ## Special Thanks
 
-背景画像には「[学園アイドルマスター](https://gakuen.idolmaster-official.jp/)」の素材を使用させていただいております．
+背景画像には「[学園アイドルマスター](https://gakuen.idolmaster-official.jp/)」の素材を使用している。
 
 [contributors-shield]: https://img.shields.io/github/contributors/m-shigemori/docker?style=for-the-badge
 [contributors-url]: https://github.com/m-shigemori/docker/graphs/contributors

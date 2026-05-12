@@ -8,7 +8,7 @@
 
 [JA](README.md) | [EN](README.en.md)
 
-An intuitive PyQt6-based GUI tool for Docker container management.
+Intuitive GUI for Docker container management.
 
 ## UI Modes
 
