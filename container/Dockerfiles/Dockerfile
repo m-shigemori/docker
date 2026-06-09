@@ -1,71 +1,58 @@
-ARG ROS_DISTRO=jazzy
+FROM ubuntu:26.04
 
-FROM ubuntu:26.04 AS base_lyrical
-FROM ubuntu:24.04 AS base_jazzy
-FROM ubuntu:22.04 AS base_humble
-
-FROM base_${ROS_DISTRO}
-
-ARG UBUNTU_VER
-ARG CUDA_VER
-ARG DEVICE
-
-ARG USER_NAME
-ARG USER_ID
 ARG GROUP_ID
+ARG USER_ID
+ARG USER_NAME
 
-ARG ROS_DISTRO
+ARG DEVICE
+ARG CUDA_VER
+
 ARG ROS_DOMAIN_ID
-
-ENV UBUNTU_VER=${UBUNTU_VER}
 
 ENV USER_NAME=${USER_NAME} \
     HOME=/home/${USER_NAME} \
     PYTHONDONTWRITEBYTECODE=1
 
-ENV ROS_DISTRO=${ROS_DISTRO}
-
-ENV LC_ALL=C.UTF-8 \
-    LANG=C.UTF-8 \
+ENV LANG=C.UTF-8 \
     TZ=Asia/Tokyo
 
-ENV NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES:-all} \
-    NVIDIA_DRIVER_CAPABILITIES=${NVIDIA_DRIVER_CAPABILITIES:-all} \
-    PATH=/usr/local/cuda/bin:${PATH} \
-    LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}
-
-RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|http://ftp.riken.jp/Linux/ubuntu/|g' /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null || true \
- && sed -i 's|http://security.ubuntu.com/ubuntu|http://ftp.riken.jp/Linux/ubuntu/|g' /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null || true
+ENV NVIDIA_VISIBLE_DEVICES=all \
+    NVIDIA_DRIVER_CAPABILITIES=all \
+    PATH=/usr/local/cuda/bin:${PATH}
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     sudo \
-    wget curl \
-    ca-certificates gnupg2 \
-    git gh python3-pip build-essential \
-    nano gedit tree bash-completion \
+    wget curl gnupg2 software-properties-common \
+    git gh python3-pip \
+    nano gedit tree \
     wl-clipboard \
     usbutils \
     iproute2 iputils-ping \
     && rm -rf /var/lib/apt/lists/*
 
 RUN if [ "${DEVICE}" = "gpu" ]; then \
-    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu${UBUNTU_VER}/x86_64/cuda-keyring_1.1-1_all.deb \
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2604/x86_64/cuda-keyring_1.1-1_all.deb \
     && dpkg -i cuda-keyring_1.1-1_all.deb \
-    && CUDA_TAG="$(echo "$CUDA_VER" | cut -d. -f1-2 | tr '.' '-')" \
+    && CUDA_TAG="$(echo "$CUDA_VER" | cut -d . -f 1-2 | tr '.' '-')" \
     && apt-get update && apt-get install -y --no-install-recommends cuda-toolkit-${CUDA_TAG} \
     && rm cuda-keyring_1.1-1_all.deb && rm -rf /var/lib/apt/lists/*; \
     fi
 
-RUN install -m 0755 -d /etc/apt/keyrings \
- && curl -fsSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
-    | gpg --dearmor -o /etc/apt/keyrings/ros-archive-keyring.gpg \
- && chmod a+r /etc/apt/keyrings/ros-archive-keyring.gpg \
- && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/ros-archive-keyring.gpg] \
-    http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" \
-    | tee /etc/apt/sources.list.d/ros2.list > /dev/null \
+RUN export ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | grep -F "tag_name" | awk -F'"' '{print $4}') \
+ && curl -L -o /tmp/ros2-apt-source.deb \
+    "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-apt-source_${ROS_APT_SOURCE_VERSION}.$(. /etc/os-release && echo ${UBUNTU_CODENAME:-${VERSION_CODENAME}})_all.deb" \
+ && dpkg -i /tmp/ros2-apt-source.deb \
+ && rm /tmp/ros2-apt-source.deb \
+# RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common \
+#  && add-apt-repository universe \
+#  && export ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | grep -F "tag_name" | awk -F'"' '{print $4}') \
+#  && curl -L -o /tmp/ros2-apt-source.deb \
+#     "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-apt-source_${ROS_APT_SOURCE_VERSION}.$(. /etc/os-release && echo ${UBUNTU_CODENAME:-${VERSION_CODENAME}})_all.deb" \
+#  && dpkg -i /tmp/ros2-apt-source.deb \
+#  && rm /tmp/ros2-apt-source.deb \
  && apt-get update && apt-get install -y --no-install-recommends \
-    ros-${ROS_DISTRO}-desktop ros-dev-tools \
-    && rm -rf /var/lib/apt/lists/*
+    ros-lyrical-desktop ros-dev-tools \
+ && rm -rf /var/lib/apt/lists/*
 
 RUN if getent passwd ${USER_ID} > /dev/null; then userdel -r $(getent passwd ${USER_ID} | cut -d: -f1); fi \
  && if getent group ${GROUP_ID} > /dev/null; then groupdel $(getent group ${GROUP_ID} | cut -d: -f1); fi \
@@ -79,6 +66,7 @@ RUN if getent passwd ${USER_ID} > /dev/null; then userdel -r $(getent passwd ${U
 COPY scripts/ /tmp/scripts/
 RUN cat /tmp/scripts/.bash_aliases >> ${HOME}/.bash_aliases \
  && cat /tmp/scripts/.bashrc_custom >> ${HOME}/.bashrc \
+ && echo "source /opt/ros/lyrical/setup.bash" >> ${HOME}/.bashrc \
  && echo "export ROS_DOMAIN_ID=${ROS_DOMAIN_ID}" >> ${HOME}/.bashrc \
  && chown ${USER_NAME}:${GROUP_ID} ${HOME}/.bash_aliases ${HOME}/.bashrc \
  && rm -rf /tmp/scripts
