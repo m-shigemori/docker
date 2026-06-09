@@ -4,12 +4,14 @@ x-base: &base_config
   build:
     context: .
     args:
-      CUDA_VER:      ${CUDA_VER}
+      UBUNTU_VER:    ${UBUNTU_VER}
       DEVICE:        ${DEVICE}
+      CUDA_VER:      ${CUDA_VER}
+      ROS_DISTRO:    ${ROS_DISTRO}
+      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID}
       USER_NAME:     ${USER_NAME}
       USER_ID:       ${USER_ID}
       GROUP_ID:      ${GROUP_ID}
-      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID}
 
   user: "${USER_ID}:${GROUP_ID}"
   network_mode: host

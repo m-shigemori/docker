@@ -8,6 +8,11 @@ mkdir -p "${SRC_DIR}"
 
 export $(cat "${DIR}/.env" | xargs)
 
+if [ "${UBUNTU_VER}" = "24.04" ]; then
+    export ROS_DISTRO="jazzy"
+elif [ "${UBUNTU_VER}" = "26.04" ]; then
+    export ROS_DISTRO="lyrical"
+
 export NAME="${NAME}"
 export IMAGE_NAME="${USER_NAME}/${NAME}"
 
