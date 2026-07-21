@@ -23,7 +23,10 @@ ENV LANG=C.UTF-8 \
 
 ENV NVIDIA_VISIBLE_DEVICES=all \
     NVIDIA_DRIVER_CAPABILITIES=all \
-    PATH=/usr/local/cuda/bin:${PATH}
+    PATH=/usr/local/cuda/bin:${PATH} \
+    QT_QPA_PLATFORM=xcb \
+    OGRE_RTT_MODE=Copy \
+    RCUTILS_COLORIZED_OUTPUT=1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     sudo \
@@ -57,10 +60,15 @@ RUN if getent passwd ${USER_ID} > /dev/null; then userdel -r $(getent passwd ${U
  && if getent group ${GROUP_ID} > /dev/null; then groupdel $(getent group ${GROUP_ID} | cut -d: -f1); fi \
  && groupadd -g ${GROUP_ID} ${USER_NAME} \
  && useradd -m -u ${USER_ID} -g ${GROUP_ID} -s /bin/bash ${USER_NAME} \
+ && for grp in dialout plugdev video render input; do \
+        getent group $grp >/dev/null || groupadd $grp; \
+        usermod -aG $grp ${USER_NAME}; \
+    done \
  && echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USER_NAME} \
  && chmod 0440 /etc/sudoers.d/${USER_NAME} \
- && mkdir -p ${HOME}/colcon_ws/src ${HOME}/.ros/log \
- && chown -R ${USER_ID}:${GROUP_ID} ${HOME}
+ && mkdir -p ${HOME}/colcon_ws/src ${HOME}/.ros/log /run/user/${USER_ID} \
+ && chmod 0700 /run/user/${USER_ID} \
+ && chown -R ${USER_ID}:${GROUP_ID} ${HOME} /run/user/${USER_ID}
 
 COPY scripts/ /tmp/scripts/
 RUN cat /tmp/scripts/.bash_aliases >> ${HOME}/.bash_aliases \

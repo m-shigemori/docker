@@ -1,5 +1,14 @@
 export EDITOR=nano
 
+export QT_QPA_PLATFORM=xcb
+export OGRE_RTT_MODE=Copy
+
+if [ -z "${XDG_RUNTIME_DIR}" ] || [ ! -O "${XDG_RUNTIME_DIR}" ]; then
+    export XDG_RUNTIME_DIR="/tmp/runtime-${USER_NAME:-$(whoami)}"
+    mkdir -p "${XDG_RUNTIME_DIR}"
+    chmod 0700 "${XDG_RUNTIME_DIR}"
+fi
+
 source /opt/ros/${ROS_DISTRO}/setup.bash
 source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
 if [ -f ${HOME}/colcon_ws/install/setup.bash ]; then

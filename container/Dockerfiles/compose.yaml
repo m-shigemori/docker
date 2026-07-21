@@ -15,6 +15,7 @@ x-base: &base_config
 
   user: "${USER_ID}:${GROUP_ID}"
   network_mode: host
+  ipc: host
   privileged: true
   stdin_open: true
   tty: true
@@ -23,6 +24,7 @@ x-base: &base_config
     CONTAINER_NAME:  ${NAME}
     DISPLAY:         ${DISPLAY}
     WAYLAND_DISPLAY: ${WAYLAND_DISPLAY}
+    QT_QPA_PLATFORM: xcb
     XDG_RUNTIME_DIR: /run/user/${USER_ID}
     PULSE_SERVER:    unix:/run/user/${USER_ID}/pulse/native
 

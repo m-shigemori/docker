@@ -34,7 +34,7 @@ export USER_ID="$(id -u)"
 export GROUP_ID="$(id -g)"
 
 XPROFILE="${HOME}/.xprofile"
-XHOST_LINE="xhost +local:root > /dev/null 2>&1"
+XHOST_LINE="xhost +local: > /dev/null 2>&1"
 
 touch "${XPROFILE}"
 
@@ -42,6 +42,6 @@ if ! grep -qF "${XHOST_LINE}" "${XPROFILE}"; then
     echo "${XHOST_LINE}" >> "${XPROFILE}"
 fi
 
-xhost +local:root > /dev/null 2>&1
+xhost +local: > /dev/null 2>&1
 
 docker compose -p "${NAME}" --profile "${DEVICE}" up -d --build --remove-orphans
