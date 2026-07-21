@@ -6,7 +6,7 @@ NAME="$(basename "$(dirname "$DIR")")"
 SRC_DIR="${DIR}/../src"
 mkdir -p "${SRC_DIR}"
 
-export $(cat "${DIR}/.env" | xargs)
+export $(grep -v '^[[:space:]]*#' "${DIR}/.env" | grep -v '^[[:space:]]*$' | xargs)
 
 if [ -z "${UBUNTU_VER}" ]; then
     echo "Error: UBUNTU_VER is not set in .env" >&2

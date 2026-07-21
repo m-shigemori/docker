@@ -9,8 +9,13 @@ if [ -z "${XDG_RUNTIME_DIR}" ] || [ ! -O "${XDG_RUNTIME_DIR}" ]; then
     chmod 0700 "${XDG_RUNTIME_DIR}"
 fi
 
-source /opt/ros/${ROS_DISTRO}/setup.bash
-source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
-if [ -f ${HOME}/colcon_ws/install/setup.bash ]; then
-    source ${HOME}/colcon_ws/install/setup.bash
+if [ -n "${ROS_DOMAIN_ID}" ] && [ -f "/opt/ros/${ROS_DISTRO}/setup.bash" ]; then
+    source /opt/ros/${ROS_DISTRO}/setup.bash
+    if [ -f /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash ]; then
+        source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
+    fi
+    if [ -f ${HOME}/colcon_ws/install/setup.bash ]; then
+        source ${HOME}/colcon_ws/install/setup.bash
+    fi
 fi
+

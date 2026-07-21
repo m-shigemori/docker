@@ -55,11 +55,11 @@ cp -r container/ <project_name>/
 
 ### 2. Configuration (.env)
 Edit `<project_name>/Dockerfiles/.env` to configure settings such as ROS distribution and GPU usage.
+* Note: If `ROS_DOMAIN_ID` is left empty, ROS2 installation will be skipped.
 
 ```bash
 # Example: .env
-ROS_DISTRO=jazzy
-USE_GPU=true
+ROS_DOMAIN_ID=53
 ```
 
 ### 3. Launch Container

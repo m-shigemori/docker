@@ -56,11 +56,10 @@ cp -r container/ <project_name>/
 
 ### 2. 環境設定（.env）
 `<project_name>/Dockerfiles/.env` を編集して，ROS のディストリビューションや GPU の使用有無などを設定する。
+※ `ROS_DOMAIN_ID` を未入力（空値）にした場合，ROS2 のインストールはスキップされます。
 
 ```bash
-# 例: .env
-ROS_DISTRO=jazzy
-USE_GPU=true
+ROS_DOMAIN_ID=53
 ```
 
 ### 3. コンテナの起動
