@@ -73,11 +73,10 @@ RUN if getent passwd ${USER_ID} > /dev/null; then userdel -r "$(getent passwd ${
 
 COPY scripts/ /tmp/scripts/
 RUN cat /tmp/scripts/.bash_aliases >> ${HOME}/.bash_aliases \
- && cat /tmp/scripts/.bashrc_custom >> ${HOME}/.bashrc \
  && if [ -n "${ROS_DOMAIN_ID}" ]; then \
-    echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ${HOME}/.bashrc \
- && echo "export ROS_DOMAIN_ID=${ROS_DOMAIN_ID}" >> ${HOME}/.bashrc; \
+    echo "export ROS_DOMAIN_ID=${ROS_DOMAIN_ID}" >> ${HOME}/.bashrc; \
     fi \
+ && cat /tmp/scripts/.bashrc_custom >> ${HOME}/.bashrc \
  && chown ${USER_NAME}:${GROUP_ID} ${HOME}/.bash_aliases ${HOME}/.bashrc \
  && rm -rf /tmp/scripts
 
