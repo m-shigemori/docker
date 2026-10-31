@@ -35,6 +35,7 @@ x-base: &base_config
     CONTAINER_NAME: ${NAME}
     ROS_DOMAIN_ID: ${ROS_DOMAIN_ID}
     DISPLAY: ${DISPLAY}
+    XAUTHORITY: /home/${USER_NAME}/.Xauthority
     WAYLAND_DISPLAY: ${WAYLAND_DISPLAY}
     QT_QPA_PLATFORM: xcb
     XDG_RUNTIME_DIR: /run/user/${USER_ID}
@@ -43,6 +44,7 @@ x-base: &base_config
   volumes:
     - /dev:/dev
     - /tmp/.X11-unix:/tmp/.X11-unix
+    - ~/.Xauthority:/home/${USER_NAME}/.Xauthority:ro
     - /run/user/${USER_ID}/${WAYLAND_DISPLAY}:/run/user/${USER_ID}/${WAYLAND_DISPLAY}
     - /run/user/${USER_ID}/pulse:/run/user/${USER_ID}/pulse
     - ../src:/home/${USER_NAME}/colcon_ws/src
