@@ -4,29 +4,41 @@ x-base: &base_config
   build:
     context: .
     args:
-      UBUNTU_VER:    ${UBUNTU_VER}
-      DEVICE:        ${DEVICE}
-      CUDA_VER:      ${CUDA_VER}
-      ROS_DISTRO:    ${ROS_DISTRO}
+      UBUNTU_VER: ${UBUNTU_VER}
+      DEVICE: ${DEVICE}
+      CUDA_VER: ${CUDA_VER}
+      ROS_DISTRO: ${ROS_DISTRO}
       ROS_DOMAIN_ID: ${ROS_DOMAIN_ID}
-      USER_NAME:     ${USER_NAME}
-      USER_ID:       ${USER_ID}
-      GROUP_ID:      ${GROUP_ID}
+      USER_NAME: ${USER_NAME}
+      USER_ID: ${USER_ID}
+      GROUP_ID: ${GROUP_ID}
+
+  image: ${IMAGE_NAME}
 
   user: "${USER_ID}:${GROUP_ID}"
+
+  group_add:
+    - dialout
+    - plugdev
+    - video
+    - render
+    - input
+
   network_mode: host
   ipc: host
   privileged: true
+
   stdin_open: true
   tty: true
 
   environment:
-    CONTAINER_NAME:  ${NAME}
-    DISPLAY:         ${DISPLAY}
+    CONTAINER_NAME: ${NAME}
+    ROS_DOMAIN_ID: ${ROS_DOMAIN_ID}
+    DISPLAY: ${DISPLAY}
     WAYLAND_DISPLAY: ${WAYLAND_DISPLAY}
     QT_QPA_PLATFORM: xcb
     XDG_RUNTIME_DIR: /run/user/${USER_ID}
-    PULSE_SERVER:    unix:/run/user/${USER_ID}/pulse/native
+    PULSE_SERVER: unix:/run/user/${USER_ID}/pulse/native
 
   volumes:
     - /dev:/dev
